@@ -176,7 +176,7 @@ const HomeScreen = () => {
     },
     { 
       icon: <FaQuestionCircle />, 
-      title: 'Doubt Solver',
+      title: 'Doubt AI Solver',
       link: '/doubt-solver'
     }
   ];
