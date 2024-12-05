@@ -1,0 +1,62 @@
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-header h1 {
+  color: #333;
+  font-size: 2.5rem;
+}
+
+.profile-content {
+  display: flex;
+  gap: 30px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+.profile-details {
+  flex: 1;
+  text-align: center;
+}
+
+.profile-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.study-materials {
+  flex: 1;
+}
+
+.materials-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.material-link {
+  text-decoration: none;
+  background: #3498db;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  transition: background 0.3s ease;
+}
+
+.material-link:hover {
+  background: #2980b9;
+}
