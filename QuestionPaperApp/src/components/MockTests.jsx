@@ -51,7 +51,7 @@ const MockTests = () => {
       difficulty: 'Intermediate',
       duration: '2 hours',
       totalQuestions: 10,
-      description: 'Comprehensive test covering core CS concepts',
+      description: 'Comprehensive test covering core CSE concepts',
       icon: <FaCode className="text-green-500" />,
       route: '/test/cs-fundamentals',
       testType: 'cs-fundamentals'

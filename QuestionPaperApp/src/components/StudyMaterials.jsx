@@ -9,6 +9,7 @@ import {
   FaFilter, 
   FaDownload 
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const SUBJECT_ICONS = {
   'Mathematics': <FaCalculator className="text-blue-500" />,
@@ -18,6 +19,7 @@ const SUBJECT_ICONS = {
 };
 
 const StudyMaterials = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
@@ -25,14 +27,66 @@ const StudyMaterials = () => {
   const materials = [
     { 
       id: 1, 
-      title: 'Mathematics Revision Notes', 
+      title: 'Engineering Mathematics Notes for GATE CSE', 
       subject: 'Mathematics', 
       type: 'PDF',
-      description: 'Comprehensive notes covering advanced mathematical concepts',
-      downloadLink: 'https://example.com/math-notes.pdf'
+      description: 'Comprehensive engineering mathematics notes for GATE CSE',
+      topics: [
+        {
+          name: 'Linear Algebra',
+          description: 'Vectors, matrices, eigenvalues, eigenvectors, and linear transformations',
+          downloadLink: '/topic/linear-algebra'
+        },
+        {
+          name: 'Probability',
+          description: 'Probability distributions, random variables, expectation, and statistical inference',
+          downloadLink: '/topic/probability'
+        },
+        {
+          name: 'Calculus',
+          description: 'Limits, continuity, differentiation, integration, and multivariate calculus',
+          downloadLink: '/topic/calculus'
+        }
+      ],
+      expandedView: true
     },
     { 
       id: 2, 
+      title: 'Discrete Mathematics Notes for GATE CSE', 
+      subject: 'Mathematics', 
+      type: 'PDF',
+      description: 'Comprehensive discrete mathematics notes for GATE CSE preparation',
+      topics: [
+        {
+          name: 'Propositional and First-Order Logic',
+          description: 'Logical connectives, truth tables, quantifiers, and predicate logic',
+          downloadLink: '/topic/logic'
+        },
+        {
+          name: 'Sets, Relations, and Functions',
+          description: 'Set theory, relations, function types, partial orders, and lattices',
+          downloadLink: '/topic/sets-relations'
+        },
+        {
+          name: 'Algebraic Structures',
+          description: 'Monoids, groups, algebraic properties, and abstract algebra concepts',
+          downloadLink: '/topic/algebraic-structures'
+        },
+        {
+          name: 'Combinatorics',
+          description: 'Counting techniques, recurrence relations, and generating functions',
+          downloadLink: '/topic/combinatorics'
+        },
+        {
+          name: 'Graph Theory',
+          description: 'Graph connectivity, matching algorithms, graph coloring, and advanced graph concepts',
+          downloadLink: '/topic/graph-theory'
+        }
+      ],
+      expandedView: true
+    },
+    { 
+      id: 3, 
       title: 'Computer Networks Textbook', 
       subject: 'Computer Science', 
       type: 'PDF',
@@ -40,7 +94,7 @@ const StudyMaterials = () => {
       downloadLink: 'https://example.com/networks-textbook.pdf'
     },
     { 
-      id: 3, 
+      id: 4, 
       title: 'Mechanical Engineering Handbook', 
       subject: 'Mechanical Engineering', 
       type: 'PDF',
@@ -48,7 +102,7 @@ const StudyMaterials = () => {
       downloadLink: 'https://example.com/mech-handbook.pdf'
     },
     { 
-      id: 4, 
+      id: 5, 
       title: 'Digital Electronics Guide', 
       subject: 'Electrical Engineering', 
       type: 'PDF',
@@ -148,16 +202,41 @@ const StudyMaterials = () => {
                 </div>
                 <h2 className="text-xl font-bold text-gray-800 mb-2">{material.title}</h2>
                 <p className="text-gray-600 mb-4 text-sm">{material.description}</p>
+                
+                {material.topics && (
+                  <div className="mb-4 bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-gray-800 mb-3">Available Topics:</h3>
+                    <div className="space-y-3">
+                      {material.topics.map(topic => (
+                        <div key={topic.name} className="border-b border-gray-200 pb-3 last:border-b-0">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h4 className="font-semibold text-gray-700">{topic.name}</h4>
+                              <p className="text-xs text-gray-500 mt-1">{topic.description}</p>
+                            </div>
+                            <button 
+                              onClick={() => navigate(topic.downloadLink, { state: { topicName: topic.name } })} 
+                              className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs hover:bg-blue-200 transition-colors"
+                            >
+                              View
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">{material.subject}</span>
-                  <a 
-                    href={material.downloadLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-                  >
-                    <FaDownload className="mr-2" /> Download
-                  </a>
+                  {!material.topics && (
+                    <button 
+                      onClick={() => navigate(material.downloadLink)} 
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
+                    >
+                      <FaDownload className="mr-2" /> Download
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>

@@ -22,6 +22,7 @@ import TestInterface from './components/TestInterface';
 import TestResults from './components/TestResults';
 import CsFundamentalsTest from './components/CsFundamentalsTest';
 import AptitudeTest from './components/AptitudeTest';
+import TopicContentViewer from './components/TopicContentViewer';
 
 // Import data
 import csFundamentalsQuestions from './data/csFundamentalsQuestions';
@@ -53,6 +54,28 @@ const HeaderWrapper = () => {
   }
   
   return <CommonHeader />;
+};
+
+// Footer wrapper component to conditionally render footer
+const FooterWrapper = () => {
+  const location = useLocation();
+  const noFooterRoutes = [
+    '/test-interface', 
+    '/test-results', 
+    '/topic-content/',  
+    '/study-materials/topic/'  
+  ];
+  
+  // Check if current path starts with any no-footer route
+  const shouldHideFooter = noFooterRoutes.some(route => 
+    location.pathname.startsWith(route)
+  );
+  
+  if (shouldHideFooter) {
+    return null;
+  }
+  
+  return <Footer />;
 };
 
 function App() {
@@ -292,11 +315,39 @@ function App() {
                 } 
               />
               
+              <Route 
+                path="/topic/:topicId" 
+                element={
+                  <>
+                    <SignedIn>
+                      <TopicContentViewer />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/topic-content/:topicId" 
+                element={
+                  <>
+                    <SignedIn>
+                      <TopicContentViewer />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
               {/* Catch-all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <Footer />
+          <FooterWrapper />
         </div>
       </BrowserRouter>
     </ClerkProvider>
