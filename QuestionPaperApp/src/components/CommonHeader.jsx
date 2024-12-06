@@ -78,21 +78,7 @@ const CommonHeader = () => {
       name: 'Mock Tests', 
       path: '/mock-tests',
     },
-    { 
-      icon: <FaCalculator />, 
-      name: 'Problems', 
-      path: '/problem-solving',
-    },
-    { 
-      icon: <FaLaptopCode />, 
-      name: 'Coding', 
-      path: '/coding-practice',
-    },
-    { 
-      icon: <FaQuestionCircle />, 
-      name: 'Doubts', 
-      path: '/doubt-solver',
-    }
+   
   ];
 
   // Simulated notifications (you can replace with real logic)

@@ -178,7 +178,8 @@ const HomeScreen = () => {
       icon: <FaQuestionCircle />, 
       title: 'Doubt AI Solver',
       link: '/doubt-solver'
-    }
+    },
+    
   ];
 
   return (

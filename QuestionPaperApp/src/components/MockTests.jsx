@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   FaClipboardList, 
   FaBook, 
@@ -7,20 +8,28 @@ import {
   FaChartBar, 
   FaRocket, 
   FaFilter, 
-  FaPlay 
+  FaPlay,
+  FaCalculator,
+  FaBrain
 } from 'react-icons/fa';
 
 const SUBJECT_ICONS = {
   'Mathematics': <FaChartBar className="text-blue-500" />,
   'Computer Science': <FaCode className="text-green-500" />,
   'General Aptitude': <FaRocket className="text-purple-500" />,
-  'Engineering Mechanics': <FaBook className="text-red-500" />
+  'Engineering Mechanics': <FaBook className="text-red-500" />,
+  'Computer Science Fundamentals': <FaCode className="text-green-500" />,
+  'Programming Concepts': <FaBrain className="text-purple-500" />,
 };
 
 const MockTests = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [selectedTest, setSelectedTest] = useState(null);
+  const [showStartDialog, setShowStartDialog] = useState(false);
 
   const mockTests = [
     { 
@@ -29,37 +38,73 @@ const MockTests = () => {
       subject: 'Mathematics', 
       difficulty: 'Advanced',
       duration: '3 hours',
-      totalQuestions: 65,
-      description: 'Comprehensive mock test covering advanced mathematical concepts for GATE preparation'
+      totalQuestions: 60,
+      description: 'Comprehensive mathematics test for GATE CSE preparation',
+      icon: <FaCalculator className="text-blue-500" />,
+      route: '/test/gate-math',
+      testType: 'gate-math'
     },
     { 
       id: 2, 
       title: 'Computer Science Fundamentals Test', 
-      subject: 'Computer Science', 
+      subject: 'Computer Science Fundamentals', 
       difficulty: 'Intermediate',
-      duration: '2.5 hours',
-      totalQuestions: 50,
-      description: 'Detailed assessment of core computer science principles and programming concepts'
+      duration: '2 hours',
+      totalQuestions: 10,
+      description: 'Comprehensive test covering core CS concepts',
+      icon: <FaCode className="text-green-500" />,
+      route: '/test/cs-fundamentals',
+      testType: 'cs-fundamentals'
     },
     { 
       id: 3, 
-      title: 'Engineering Mechanics Practice Exam', 
-      subject: 'Engineering Mechanics', 
+      title: 'Appitude Test', 
+      subject: 'Appitude Concepts', 
       difficulty: 'Beginner',
-      duration: '2 hours',
-      totalQuestions: 40,
-      description: 'Introductory mock test for understanding basic engineering mechanics principles'
+      duration: '1.5 hours',
+      totalQuestions: 15,
+      description: 'In-depth test of appitude principles and paradigms',
+      icon: <FaBrain className="text-purple-500" />,
+      route: '/test/aptitude-concepts',
+      testType: 'aptitude'
     },
     { 
       id: 4, 
-      title: 'General Aptitude Comprehensive Test', 
-      subject: 'General Aptitude', 
+      title: 'Engineering Mechanics Test', 
+      subject: 'Engineering Mechanics', 
       difficulty: 'All Levels',
-      duration: '1.5 hours',
-      totalQuestions: 30,
-      description: 'Holistic aptitude test covering logical reasoning, quantitative, and verbal skills'
+      duration: '2.5 hours',
+      totalQuestions: 20,
+      description: 'Comprehensive test of mechanical engineering principles',
+      icon: <FaBook className="text-red-500" />,
+      route: '/test/engineering-mechanics',
+      testType: 'engineering-mechanics'
     }
   ];
+
+  // Handle automatic test selection from GateMathTest
+  useEffect(() => {
+    if (location.state?.autoSelectTest) {
+      const test = mockTests.find(t => t.title === location.state.autoSelectTest);
+      if (test) {
+        setSelectedTest(test);
+        if (location.state.startTest) {
+          setShowStartDialog(true);
+        }
+      }
+    }
+  }, [location]);
+
+  const handleStartTest = (test) => {
+    setSelectedTest(test);
+    setShowStartDialog(true);
+  };
+
+  const startTest = () => {
+    navigate(`/test-interface`, { 
+      state: { testType: selectedTest.testType } 
+    });
+  };
 
   const filteredTests = mockTests.filter(test => 
     (searchQuery === '' || 
@@ -73,22 +118,22 @@ const MockTests = () => {
   const difficulties = [...new Set(mockTests.map(t => t.difficulty))];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Mock Test Arena</h1>
-          <p className="text-xl text-gray-600">Simulate exam experiences and assess your skills</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 sm:mb-4">Mock Test Arena</h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600">Simulate exam experiences and assess your skills</p>
         </motion.div>
 
         {/* Filters */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mb-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+          className="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4"
         >
           {/* Search */}
           <div className="relative w-full sm:w-1/2">
@@ -97,9 +142,9 @@ const MockTests = () => {
               placeholder="Search mock tests..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 pl-10 bg-white text-black placeholder-gray-500 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 sm:p-3 pl-8 sm:pl-10 text-sm sm:text-base bg-white text-black placeholder-gray-500 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <FaFilter className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm sm:text-base" />
           </div>
 
           {/* Filters */}
@@ -107,7 +152,7 @@ const MockTests = () => {
             <select 
               value={selectedSubject || ''} 
               onChange={(e) => setSelectedSubject(e.target.value || null)}
-              className="p-2 border border-gray-300 rounded-xl bg-white text-black"
+              className="p-1.5 sm:p-2 text-sm sm:text-base border border-gray-300 rounded-xl bg-white text-black"
             >
               <option value="">All Subjects</option>
               {subjects.map(subject => (
@@ -118,7 +163,7 @@ const MockTests = () => {
             <select 
               value={selectedDifficulty || ''} 
               onChange={(e) => setSelectedDifficulty(e.target.value || null)}
-              className="p-2 border border-gray-300 rounded-xl bg-white text-black"
+              className="p-1.5 sm:p-2 text-sm sm:text-base border border-gray-300 rounded-xl bg-white text-black"
             >
               <option value="">All Difficulties</option>
               {difficulties.map(difficulty => (
@@ -133,7 +178,7 @@ const MockTests = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ staggerChildren: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
         >
           {filteredTests.map((test) => (
             <motion.div 
@@ -142,13 +187,13 @@ const MockTests = () => {
               whileTap={{ scale: 0.95 }}
               className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl"
             >
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="text-3xl">
-                    {SUBJECT_ICONS[test.subject]}
+              <div className="p-4 sm:p-6">
+                <div className="flex justify-between items-start mb-2 sm:mb-4">
+                  <div className="text-2xl sm:text-3xl">
+                    {test.icon}
                   </div>
                   <span className={`
-                    text-sm font-semibold 
+                    text-xs sm:text-sm font-semibold 
                     ${test.difficulty === 'Beginner' ? 'text-green-600' : 
                       test.difficulty === 'Intermediate' ? 'text-blue-600' : 
                       test.difficulty === 'Advanced' ? 'text-red-600' : 'text-purple-600'}
@@ -156,20 +201,25 @@ const MockTests = () => {
                     {test.difficulty}
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{test.title}</h2>
-                <p className="text-gray-600 mb-4 text-sm">{test.description}</p>
-                <div className="mb-4 flex justify-between text-sm text-gray-600">
-                  <span>📝 {test.totalQuestions} Questions</span>
-                  <span>⏱️ {test.duration}</span>
+                <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2 truncate">{test.title}</h2>
+                <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-4 line-clamp-2">{test.description}</p>
+                <div className="flex justify-between items-center text-xs sm:text-sm text-gray-500">
+                  <div className="flex items-center space-x-2">
+                    <FaClipboardList />
+                    <span>{test.totalQuestions} Questions</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <FaPlay />
+                    <span>{test.duration}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{test.subject}</span>
-                  <button 
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-                  >
-                    <FaPlay className="mr-2" /> Start Test
-                  </button>
-                </div>
+                <button 
+                  onClick={() => handleStartTest(test)}
+                  className="w-full mt-3 sm:mt-4 p-2 sm:p-3 bg-purple-600 text-white text-sm sm:text-base font-semibold rounded-lg 
+                  hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  Start Test
+                </button>
               </div>
             </motion.div>
           ))}
@@ -186,6 +236,40 @@ const MockTests = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Start Test Dialog */}
+      {showStartDialog && selectedTest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-md w-full mx-4"
+          >
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Start {selectedTest.title}</h2>
+            <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p><strong>Total Questions:</strong> {selectedTest.totalQuestions}</p>
+              <p><strong>Duration:</strong> {selectedTest.duration}</p>
+              <p><strong>Difficulty:</strong> {selectedTest.difficulty}</p>
+            </div>
+            <div className="flex space-x-2 sm:space-x-4">
+              <button 
+                onClick={() => setShowStartDialog(false)}
+                className="flex-1 p-2 sm:p-3 bg-gray-200 text-gray-800 text-sm sm:text-base font-semibold rounded-lg 
+                hover:bg-gray-300 transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={startTest}
+                className="flex-1 p-2 sm:p-3 bg-purple-600 text-white text-sm sm:text-base font-semibold rounded-lg 
+                hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                Confirm
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

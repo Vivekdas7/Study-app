@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 
 // Import components
@@ -16,27 +16,52 @@ import ProblemSolving from './components/ProblemSolving';
 import CodingPractice from './components/CodingPractice';
 import DoubtSolver from './components/DoubtSolver';
 import MockTests from './components/MockTests';
+import GateMathTest from './components/GateMathTest';
 import CommonHeader from './components/CommonHeader';
+import TestInterface from './components/TestInterface';
+import TestResults from './components/TestResults';
+import CsFundamentalsTest from './components/CsFundamentalsTest';
+import AptitudeTest from './components/AptitudeTest';
+
+// Import data
+import csFundamentalsQuestions from './data/csFundamentalsQuestions';
+import { mathQuestions } from './data/gateQuestions';
+import aptitudeQuestions from './data/aptitudeQuestions';
 
 // Wrapper component to handle route parameters
 const QuestionPaperViewerWrapper = () => {
-  const { branch, year } = useParams();
+  const { questionId } = useParams();
+  const location = useLocation();
+
+  // Find the specific question
+  const question = mathQuestions.find(q => q.id === parseInt(questionId));
+
+  if (!question) {
+    return <Navigate to="/mock-tests" replace />;
+  }
+
+  return <QuestionPaperViewer question={question} />;
+};
+
+// Header wrapper component to conditionally render header
+const HeaderWrapper = () => {
+  const location = useLocation();
+  const noHeaderRoutes = ['/test-interface', '/test-results'];
   
-  return (
-    <QuestionPaperViewer 
-      branch={branch ? branch.replace('-', ' ') : ''} 
-      year={year || ''} 
-    />
-  );
+  if (noHeaderRoutes.some(route => location.pathname.startsWith(route))) {
+    return null;
+  }
+  
+  return <CommonHeader />;
 };
 
 function App() {
   return (
     <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
       <BrowserRouter>
-        <div className="flex flex-col min-h-screen">
-          <CommonHeader />
-          <main className="flex-grow">
+        <div className="page-container">
+          <HeaderWrapper />
+          <main className="content-wrapper">
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<ClerkLogin />} />
@@ -91,6 +116,20 @@ function App() {
                   <>
                     <SignedIn>
                       <QuestionPapers />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/papers/:branch/:year" 
+                element={
+                  <>
+                    <SignedIn>
+                      <QuestionPaperViewerWrapper />
                     </SignedIn>
                     <SignedOut>
                       <RedirectToSignIn />
@@ -170,11 +209,81 @@ function App() {
               />
               
               <Route 
-                path="/papers/:branch/:year" 
+                path="/gate-math-test" 
                 element={
                   <>
                     <SignedIn>
-                      <QuestionPaperViewerWrapper />
+                      <GateMathTest />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/cs-fundamentals-test" 
+                element={
+                  <>
+                    <SignedIn>
+                      <CsFundamentalsTest />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/aptitude-test" 
+                element={
+                  <>
+                    <SignedIn>
+                      <AptitudeTest />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/test/aptitude-concepts" 
+                element={
+                  <>
+                    <SignedIn>
+                      <AptitudeTest />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/test-interface" 
+                element={
+                  <>
+                    <SignedIn>
+                      <TestInterface />
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              
+              <Route 
+                path="/test-results" 
+                element={
+                  <>
+                    <SignedIn>
+                      <TestResults />
                     </SignedIn>
                     <SignedOut>
                       <RedirectToSignIn />

@@ -38,18 +38,18 @@ const Footer = () => {
   const contactInfo = [
     { 
       icon: FaEnvelope, 
-      text: 'support@questionpaperapp.com',
-      href: 'mailto:support@questionpaperapp.com'
+      text: 'dasvivek398@gmail.com',
+      href: 'mailto:dasvivek398@gmail.com'
     },
     { 
       icon: FaPhone, 
-      text: '+91 9876543210',
-      href: 'tel:+919876543210'
+      text: '+91 9366159066',
+      href: 'tel:+919366159066'
     },
     { 
       icon: FaMapMarkerAlt, 
-      text: 'Silicon Valley, California',
-      href: 'https://maps.google.com/?q=Silicon+Valley,+California'
+      text: 'Kolkata, West Bengal, India',
+      href: 'https://maps.google.com/?q=Kolkata, West Bengal, India'
     }
   ];
 
