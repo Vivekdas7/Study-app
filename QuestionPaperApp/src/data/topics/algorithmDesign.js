@@ -24,6 +24,40 @@ export const algorithmDesignData = {
           explanation: "Represents the time complexity of divide and conquer algorithms, where a is the number of subproblems, b is the division factor, and f(n) is the cost of dividing and combining."
         }
       ]
+    },
+    {
+      title: "Greedy Algorithms",
+      content: "Greedy algorithms make locally optimal choices at each step with the hope of finding a global optimum. They are used in optimization problems where selecting the locally optimal choice leads to a global solution.",
+      formulas: [],
+      examples: [
+        {
+          title: "Fractional Knapsack Problem",
+          description: "Select items to maximize value while respecting weight constraint",
+          solution: "Sort items by value-to-weight ratio, then select items greedily"
+        },
+        {
+          title: "Huffman Coding",
+          description: "Data compression technique for creating optimal prefix codes",
+          solution: "Build a binary tree with minimum total path length"
+        }
+      ]
+    },
+    {
+      title: "Dynamic Programming Strategies",
+      content: "Dynamic programming is a method for solving complex problems by breaking them down into simpler subproblems, solving each subproblem only once, and storing the solutions to subproblems to avoid redundant computation.",
+      formulas: [],
+      examples: [
+        {
+          title: "Longest Common Subsequence",
+          complexity: "O(mn)",
+          approach: "2D DP table tracking common subsequence length"
+        },
+        {
+          title: "Matrix Chain Multiplication",
+          complexity: "O(n³)",
+          approach: "Minimize total multiplication operations"
+        }
+      ]
     }
   ],
 
@@ -64,6 +98,29 @@ export const algorithmDesignData = {
           "Worst-case: Already sorted array with poor pivot selection - O(n²)"
         ],
         answer: "Worst-case is O(n²)"
+      }
+    },
+    {
+      year: 2020,
+      question: "Explain the difference between Greedy and Dynamic Programming approaches",
+      solution: {
+        steps: [
+          "Greedy algorithms make locally optimal choices without backtracking",
+          "Dynamic Programming explores all possible solutions and stores intermediate results to optimize computation"
+        ],
+        answer: "Greedy algorithms make locally optimal choices without backtracking, while DP explores all possible solutions and stores intermediate results to optimize computation."
+      }
+    },
+    {
+      year: 2019,
+      question: "Design an algorithm to solve the 0/1 Knapsack problem using Dynamic Programming",
+      solution: {
+        steps: [
+          "Create a 2D DP table",
+          "Iterate through items",
+          "Fill the table by comparing including or excluding each item to maximize total value"
+        ],
+        answer: "Create a 2D DP table, iterate through items, and fill the table by comparing including or excluding each item to maximize total value."
       }
     }
   ],

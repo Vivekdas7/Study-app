@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
   FaBook, 
+  FaCode,
   FaChalkboardTeacher, 
   FaLightbulb, 
-  FaExclamationCircle,
+  FaCalculator, 
+  FaExclamationCircle, 
   FaChevronRight,
-  FaCode,
-  FaCalculator,
-  FaMobileAlt,  // Add mobile-specific icon
-  FaDesktop,     // Add desktop-specific icon
-  FaList         // Add list icon for mobile navigation
+  FaDesktop,    
+  FaMobileAlt,  
+  FaList,       
+  FaInfoCircle, 
+  FaSquareRootAlt        
 } from 'react-icons/fa';
+import { motion } from 'framer-motion'; // Import framer motion
 
 // Linear Algebra Imports
 import { linearAlgebraData } from '../data/topics/linearAlgebra';
@@ -120,10 +123,11 @@ import { graphsData } from '../data/topics/graphs';
 import { advancedDataStructuresData } from '../data/topics/advanced-data-structures';
 
 const TopicDocumentation = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('keyTopics');
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768);
   const [mobileContentView, setMobileContentView] = useState('navigation');
+  const [expandedSections, setExpandedSections] = useState({});
   const { topicCategory, topicName } = useParams();
   
   // Animate tab changes
@@ -139,28 +143,442 @@ const TopicDocumentation = () => {
       setIsMobileView(window.innerWidth <= 768);
     };
 
-    // Add event listener
     window.addEventListener('resize', handleResize);
-
-    // Cleanup event listener
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  // Add responsive meta tag
+  // Initialize state with default mobile content view
   useEffect(() => {
-    // Add viewport meta tag for responsiveness
-    const metaViewport = document.createElement('meta');
-    metaViewport.name = 'viewport';
-    metaViewport.content = 'width=device-width, initial-scale=1, maximum-scale=1';
-    document.head.appendChild(metaViewport);
-
-    // Cleanup meta tag on component unmount
-    return () => {
-      document.head.removeChild(metaViewport);
-    };
+    // Set default mobile content view to key topics
+    setMobileContentView('keyTopics');
+    setActiveTab('keyTopics');
   }, []);
+
+  // Debug useEffect for mobile view and content view
+  useEffect(() => {
+    console.log('Mobile View State:', {
+      isMobileView,
+      mobileContentView,
+      activeTab
+    });
+  }, [isMobileView, mobileContentView, activeTab]);
+
+  // Toggle section expansion for mobile
+  const toggleSection = (sectionName) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }));
+  };
+
+  // Render mobile-friendly content
+  const renderMobileContent = () => {
+    return (
+      <div className="
+        mobile-content-container
+        space-y-4
+        p-4
+        bg-white
+        rounded-lg
+        shadow-md
+      ">
+        {renderMobileSectionContent()}
+        <MobileBottomNavigation />
+      </div>
+    );
+  };
+
+  // Mobile-friendly bottom navigation
+  const MobileBottomNavigation = () => {
+    const mobileBottomNavItems = [
+      { 
+        id: 'keyTopics', 
+        icon: FaChalkboardTeacher, 
+        label: 'Key Topics',
+        color: 'text-green-600'
+      },
+      { 
+        id: 'theorems', 
+        icon: FaLightbulb, 
+        label: 'Theorems',
+        color: 'text-purple-600'
+      },
+      { 
+        id: 'gateQuestions', 
+        icon: FaCalculator, 
+        label: 'GATE Questions',
+        color: 'text-orange-600'
+      },
+      { 
+        id: 'commonMistakes', 
+        icon: FaExclamationCircle, 
+        label: 'Common Mistakes',
+        color: 'text-red-600'
+      }
+    ];
+
+    return (
+      <div className="
+        fixed bottom-0 left-0 right-0 
+        bg-white shadow-2xl z-50
+        border-t border-gray-200
+      ">
+        <div className="flex justify-around py-3 px-2">
+          {mobileBottomNavItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                console.log(`Clicked: ${item.id}`); // Debug log
+                setMobileContentView(item.id);
+                setActiveTab(item.id);
+              }}
+              className={`
+                flex flex-col items-center 
+                ${mobileContentView === item.id 
+                  ? `${item.color} font-bold` 
+                  : 'text-gray-500 hover:text-gray-700'}
+                transition-colors duration-200
+                p-2 rounded-lg
+                focus:outline-none
+                w-full // Ensure full width for easier tapping
+              `}
+            >
+              <item.icon 
+                className={`
+                  text-xl mb-1
+                  ${mobileContentView === item.id 
+                    ? 'scale-110' 
+                    : 'scale-100'}
+                  transition-transform duration-200
+                `} 
+              />
+              <span className="text-xs">
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Render mobile section content
+  const renderMobileSectionContent = () => {
+    const data = getTopicData();
+    const sectionName = mobileContentView;
+
+    console.log('Current Mobile Content View:', sectionName); // Debug log
+
+    if (!data[sectionName] || data[sectionName].length === 0) {
+      return (
+        <div className="
+          text-center text-gray-500 
+          p-4 bg-gray-50 rounded-lg
+          m-4 shadow-sm
+        ">
+          <FaInfoCircle className="mx-auto text-3xl mb-2 text-gray-400" />
+          No content available for this section.
+        </div>
+      );
+    }
+
+    switch(sectionName) {
+      case 'keyTopics':
+        return (
+          <div className="p-4 space-y-4">
+            {data[sectionName].map((topic, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <div className="
+                  bg-blue-50 border-b border-blue-100
+                  p-3 flex items-center
+                ">
+                  <FaChalkboardTeacher className="text-blue-600 mr-3 text-xl" />
+                  <h4 className="
+                    text-base font-bold 
+                    text-blue-800
+                  ">
+                    {topic.title}
+                  </h4>
+                </div>
+                <div className="p-4">
+                  <p className="
+                    text-sm text-gray-700 
+                    leading-relaxed
+                  ">
+                    {topic.content}
+                  </p>
+                  {topic.formulas && (
+                    <div className="
+                      mt-3 p-3 
+                      bg-blue-50 rounded-lg
+                      border border-blue-100
+                    ">
+                      {topic.formulas.map((formula, formulaIndex) => (
+                        <div 
+                          key={formulaIndex} 
+                          className="
+                            text-xs text-blue-900
+                            mb-2 last:mb-0
+                            flex items-center
+                          "
+                        >
+                          <FaSquareRootAlt className="mr-2 text-blue-700" />
+                          <strong className="mr-2 text-blue-800">
+                            {formula.name}:
+                          </strong>
+                          {formula.formula}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      case 'theorems':
+        return (
+          <div className="p-4 space-y-4">
+            {data[sectionName].map((theorem, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <div className="
+                  bg-green-50 border-b border-green-100
+                  p-3 flex items-center
+                ">
+                  <FaLightbulb className="text-green-600 mr-3 text-xl" />
+                  <h4 className="
+                    text-base font-bold 
+                    text-green-800
+                  ">
+                    {theorem.name}
+                  </h4>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div>
+                    <h5 className="
+                      text-sm font-semibold 
+                      text-green-700 mb-1
+                    ">
+                      Statement
+                    </h5>
+                    <p className="
+                      text-sm text-gray-700 
+                      italic
+                    ">
+                      {theorem.statement}
+                    </p>
+                  </div>
+                  <div>
+                    <h5 className="
+                      text-sm font-semibold 
+                      text-green-700 mb-1
+                    ">
+                      Explanation
+                    </h5>
+                    <p className="
+                      text-sm text-gray-700
+                    ">
+                      {theorem.explanation}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      case 'gateQuestions':
+        return (
+          <div className="p-4 space-y-4">
+            {data[sectionName].map((question, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <div className="
+                  bg-orange-50 border-b border-orange-100
+                  p-3 flex justify-between items-center
+                ">
+                  <div className="flex items-center">
+                    <FaCalculator className="text-orange-600 mr-3 text-xl" />
+                    <h4 className="
+                      text-base font-bold 
+                      text-orange-800
+                    ">
+                      GATE {question.year} Question
+                    </h4>
+                  </div>
+                  <span className="
+                    bg-orange-100 text-orange-800 
+                    px-2 py-1 rounded-full text-xs
+                  ">
+                    Problem
+                  </span>
+                </div>
+                <div className="p-4 space-y-3">
+                  <p className="
+                    text-sm text-gray-700 
+                    leading-relaxed
+                  ">
+                    {question.question}
+                  </p>
+                  
+                  <div className="
+                    bg-gray-50 rounded-lg 
+                    p-3 border border-gray-200
+                  ">
+                    <h5 className="
+                      text-sm font-semibold 
+                      text-gray-800 mb-2
+                      border-b border-gray-300 pb-1
+                    ">
+                      Solution
+                    </h5>
+                    <ol className="
+                      list-decimal list-inside 
+                      space-y-1 text-sm text-gray-700
+                    ">
+                      {question.solution.steps.map((step, stepIndex) => (
+                        <li 
+                          key={stepIndex} 
+                          className="
+                            hover:text-orange-700 
+                            transition-colors
+                          "
+                        >
+                          {step}
+                        </li>
+                      ))}
+                    </ol>
+                    <div className="
+                      mt-3 pt-2 border-t border-gray-200 
+                      font-bold text-green-700
+                      text-center text-sm
+                    ">
+                      Answer: {question.solution.answer}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      case 'commonMistakes':
+        return (
+          <div className="p-4 space-y-4">
+            {data[sectionName].map((mistake, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <div className="
+                  bg-red-50 border-b border-red-100
+                  p-3 flex items-center
+                ">
+                  <FaExclamationCircle className="text-red-600 mr-3 text-xl" />
+                  <h4 className="
+                    text-base font-bold 
+                    text-red-800
+                  ">
+                    Common Mistake
+                  </h4>
+                </div>
+                <div className="p-4 space-y-3">
+                  <p className="
+                    text-sm text-red-700 
+                    italic
+                  ">
+                    {mistake.mistake}
+                  </p>
+                  <div className="
+                    bg-white rounded-lg 
+                    border border-red-100 
+                    p-3
+                  ">
+                    <h5 className="
+                      text-sm font-semibold 
+                      text-green-800 mb-1
+                    ">
+                      Correction
+                    </h5>
+                    <p className="
+                      text-sm text-gray-700
+                    ">
+                      {mistake.correction}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   // Get the appropriate data based on topic name
   const getTopicData = () => {
@@ -287,6 +705,309 @@ const TopicDocumentation = () => {
     );
   }
 
+  // Render desktop section content based on type
+  const renderDesktopSectionContent = (sectionName, sectionData) => {
+    switch(sectionName) {
+      case 'keyTopics':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sectionData.map((topic, index) => (
+              <div 
+                key={index} 
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <h4 className="
+                  text-xl font-bold mb-3 
+                  text-blue-800 group-hover:text-blue-600
+                  transition-colors
+                ">
+                  {topic.title}
+                </h4>
+                <p className="
+                  text-gray-600 mb-4 
+                  leading-relaxed
+                ">
+                  {topic.content}
+                </p>
+                {topic.formulas && (
+                  <div className="
+                    bg-blue-50 rounded-lg p-4 
+                    border border-blue-100
+                  ">
+                    {topic.formulas.map((formula, formulaIndex) => (
+                      <div 
+                        key={formulaIndex} 
+                        className="
+                          mb-2 last:mb-0
+                          text-sm text-blue-900
+                        "
+                      >
+                        <strong className="mr-2 text-blue-700">
+                          {formula.name}:
+                        </strong>
+                        {formula.formula}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      
+      case 'theorems':
+        return (
+          <div className="space-y-6">
+            {sectionData.map((theorem, index) => (
+              <div 
+                key={index} 
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <h4 className="
+                  text-2xl font-bold mb-3 
+                  text-green-800
+                  border-b border-green-100 pb-2
+                ">
+                  {theorem.name}
+                </h4>
+                <div className="
+                  grid grid-cols-1 md:grid-cols-2 gap-4
+                  text-gray-700
+                ">
+                  <div>
+                    <h5 className="font-semibold text-green-700 mb-2">
+                      Statement
+                    </h5>
+                    <p className="italic">{theorem.statement}</p>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-green-700 mb-2">
+                      Explanation
+                    </h5>
+                    <p>{theorem.explanation}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      
+      case 'gateQuestions':
+        return (
+          <div className="space-y-6">
+            {sectionData.map((question, index) => (
+              <div 
+                key={index} 
+                className="
+                  bg-white 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <div className="
+                  flex justify-between items-center 
+                  mb-4 pb-2 border-b border-gray-200
+                ">
+                  <h4 className="
+                    text-xl font-bold 
+                    text-orange-800
+                  ">
+                    GATE {question.year} Question
+                  </h4>
+                  <span className="
+                    bg-orange-100 text-orange-800 
+                    px-3 py-1 rounded-full text-sm
+                  ">
+                    Problem
+                  </span>
+                </div>
+                
+                <p className="
+                  text-gray-700 mb-4 
+                  text-base leading-relaxed
+                ">
+                  {question.question}
+                </p>
+                
+                <div className="
+                  bg-gray-50 rounded-lg p-4 
+                  border border-gray-200
+                ">
+                  <h5 className="
+                    font-semibold mb-3 
+                    text-gray-800 text-lg
+                    border-b border-gray-300 pb-2
+                  ">
+                    Solution
+                  </h5>
+                  <ol className="
+                    list-decimal list-inside 
+                    space-y-2 text-gray-700
+                  ">
+                    {question.solution.steps.map((step, stepIndex) => (
+                      <li 
+                        key={stepIndex} 
+                        className="
+                          hover:text-orange-700 
+                          transition-colors
+                        "
+                      >
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                  <div className="
+                    mt-4 pt-3 border-t border-gray-200 
+                    font-bold text-green-700
+                    text-center
+                  ">
+                    Answer: {question.solution.answer}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      
+      case 'commonMistakes':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sectionData.map((mistake, index) => (
+              <div 
+                key={index} 
+                className="
+                  bg-red-50 
+                  rounded-lg 
+                  shadow-md 
+                  p-4 
+                  mb-4 
+                  last:mb-0
+                  hover:shadow-lg 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <h4 className="
+                  text-xl font-bold 
+                  text-red-800 mb-3
+                  border-b border-red-200 pb-2
+                ">
+                  Common Mistake
+                </h4>
+                <p className="
+                  text-red-700 mb-4 
+                  italic
+                ">
+                  {mistake.mistake}
+                </p>
+                <div className="
+                  bg-white rounded-lg 
+                  border border-red-100 
+                  p-4
+                ">
+                  <h5 className="
+                    font-semibold text-green-800 
+                    mb-2
+                  ">
+                    Correction
+                  </h5>
+                  <p className="text-gray-700">
+                    {mistake.correction}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  // Render topic content for desktop
+  const renderTopicContent = () => {
+    const data = getTopicData();
+    
+    // Define the sections to render
+    const sections = [
+      { 
+        name: 'keyTopics', 
+        title: 'Key Topics', 
+        icon: <FaChalkboardTeacher /> 
+      },
+      { 
+        name: 'theorems', 
+        title: 'Theorems', 
+        icon: <FaLightbulb /> 
+      },
+      { 
+        name: 'gateQuestions', 
+        title: 'GATE Questions', 
+        icon: <FaCalculator /> 
+      },
+      { 
+        name: 'commonMistakes', 
+        title: 'Common Mistakes', 
+        icon: <FaExclamationCircle /> 
+      }
+    ];
+
+    return (
+      <div className="topic-content-container">
+        {sections.map((section) => {
+          const sectionData = data[section.name];
+          
+          // Only render if section has data
+          if (!sectionData || sectionData.length === 0) return null;
+
+          return (
+            <div 
+              key={section.name} 
+              className={`topic-section ${activeTab === section.name ? 'active' : ''}`}
+            >
+              <div className="section-header">
+                {section.icon}
+                <h2>{section.title}</h2>
+              </div>
+              
+              <div className="section-content">
+                {renderDesktopSectionContent(section.name, sectionData)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // Tab Button component
   const TabButton = ({ id, label, icon: Icon }) => (
     <button
       onClick={() => setActiveTab(id)}
@@ -303,249 +1024,14 @@ const TopicDocumentation = () => {
     </button>
   );
 
-  const SectionHeader = ({ children, icon: Icon }) => (
-    <div className="flex items-center space-x-3 mb-4 border-b-2 border-gray-200 pb-2">
-      <Icon className="text-2xl text-blue-600" />
-      <h2 className="text-2xl font-bold text-gray-800">{children}</h2>
-    </div>
-  );
-
-  const Formula = ({ formula }) => (
-    <div 
-      className="
-        bg-white border border-gray-200 rounded-lg p-4 mb-4 
-        shadow-sm hover:shadow-md transition-shadow duration-300
-      "
-    >
-      <h4 className="font-semibold text-lg text-gray-800 mb-2">{formula.name}</h4>
-      <div 
-        className="
-          bg-gray-50 p-3 rounded border border-gray-200 
-          font-mono text-blue-800 mb-2 overflow-x-auto
-        "
-      >
-        {formula.formula}
-      </div>
-      <p className="text-gray-600 italic">{formula.explanation}</p>
-    </div>
-  );
-
-  const GateQuestion = ({ question }) => (
-    <div 
-      className="
-        bg-white rounded-lg shadow-md border border-gray-200 
-        p-6 mb-6 hover:shadow-lg transition-shadow duration-300
-      "
-    >
-      <div className="flex justify-between items-start mb-4">
-        <h4 className="font-semibold text-lg text-gray-800">GATE {question.year}</h4>
-        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-          Problem
-        </span>
-      </div>
-      <p className="mb-4 text-gray-700">{question.question}</p>
-      <div 
-        className="
-          bg-gray-50 p-4 rounded-lg border border-gray-200
-        "
-      >
-        <h5 className="font-semibold mb-2 text-gray-800">Solution:</h5>
-        <ol className="list-decimal list-inside space-y-2 text-gray-700">
-          {question.solution.steps.map((step, index) => (
-            <li key={index} className="hover:text-blue-700 transition-colors">
-              {step}
-            </li>
-          ))}
-        </ol>
-        <div 
-          className="
-            mt-4 pt-3 border-t border-gray-200 
-            font-bold text-green-700
-          "
-        >
-          Answer: {question.solution.answer}
-        </div>
-      </div>
-    </div>
-  );
-
+  // Render topic navigation
   const renderTopicNavigation = () => {
     return (
       <div className="space-y-2">
-        <TabButton id="overview" label="Overview" icon={FaBook} />
-        <TabButton id="theorems" label="Theorems" icon={FaChalkboardTeacher} />
-        <TabButton id="questions" label="GATE Questions" icon={FaLightbulb} />
-        <TabButton id="mistakes" label="Common Mistakes" icon={FaExclamationCircle} />
-      </div>
-    );
-  };
-
-  const renderTopicContent = () => {
-    return (
-      <div>
-        {/* Render different tabs */}
-        {activeTab === 'overview' && (
-          <div>
-            <SectionHeader icon={FaBook}>Key Topics</SectionHeader>
-            {data.keyTopics.map((topic, index) => (
-              <div 
-                key={index} 
-                className="
-                  bg-white rounded-lg p-6 mb-6 
-                  shadow-md border border-gray-200 
-                  hover:shadow-lg transition-shadow
-                "
-              >
-                <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                  {topic.title}
-                </h3>
-                <p className="text-gray-700 mb-4 whitespace-pre-line">
-                  {topic.content}
-                </p>
-                {topic.formulas && topic.formulas.map((formula, idx) => (
-                  <Formula key={idx} formula={formula} />
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'theorems' && (
-          <div>
-            <SectionHeader icon={FaChalkboardTeacher}>Important Theorems</SectionHeader>
-            {data.theorems.map((theorem, index) => (
-              <div 
-                key={index} 
-                className="
-                  bg-white rounded-lg p-6 mb-6 
-                  shadow-md border border-gray-200 
-                  hover:shadow-lg transition-shadow
-                "
-              >
-                <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                  {theorem.name}
-                </h3>
-                <p className="text-gray-700 mb-4">
-                  {theorem.statement}
-                </p>
-                <p className="text-gray-700">
-                  {theorem.explanation}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'questions' && (
-          <div>
-            <SectionHeader icon={FaLightbulb}>GATE Previous Year Questions</SectionHeader>
-            {data.gateQuestions.map((question, index) => (
-              <GateQuestion key={index} question={question} />
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'mistakes' && (
-          <div>
-            <SectionHeader icon={FaExclamationCircle}>Common Mistakes to Avoid</SectionHeader>
-            {data.commonMistakes.map((item, index) => (
-              <div 
-                key={index} 
-                className="
-                  bg-red-50 rounded-lg p-6 mb-6 
-                  shadow-md border border-gray-200 
-                  hover:shadow-lg transition-shadow
-                "
-              >
-                <h3 className="text-lg font-semibold text-red-600 mb-4">
-                  {item.mistake}
-                </h3>
-                <p className="text-gray-700">
-                  {item.correction}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Mobile-friendly bottom navigation
-  const MobileBottomNavigation = () => {
-    const navItems = [
-      { 
-        id: 'navigation', 
-        icon: FaList, 
-        label: 'Topics',
-        color: 'text-blue-600'
-      },
-      { 
-        id: 'overview', 
-        icon: FaBook, 
-        label: 'Overview',
-        color: 'text-green-600'
-      },
-      { 
-        id: 'content', 
-        icon: FaChalkboardTeacher, 
-        label: 'Content',
-        color: 'text-purple-600'
-      },
-      { 
-        id: 'questions', 
-        icon: FaLightbulb, 
-        label: 'Questions',
-        color: 'text-orange-600'
-      }
-    ];
-
-    return (
-      <div className={`
-        ${!isMobileView ? 'hidden' : ''}
-        fixed 
-        bottom-0 
-        left-0 
-        right-0 
-        bg-white 
-        shadow-2xl 
-        border-t 
-        z-50
-      `}>
-        <div className="flex justify-around py-3 px-2">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setMobileContentView(item.id);
-                setActiveTab(item.id === 'content' ? 'overview' : item.id);
-              }}
-              className={`
-                flex 
-                flex-col 
-                items-center 
-                justify-center 
-                w-full 
-                py-2 
-                rounded-lg 
-                transition-all 
-                duration-300 
-                ${mobileContentView === item.id 
-                  ? `${item.color} bg-blue-50` 
-                  : 'text-gray-500 hover:bg-gray-100'}
-              `}
-            >
-              <item.icon 
-                className={`
-                  text-xl 
-                  mb-1 
-                  ${mobileContentView === item.id ? 'scale-110' : ''}
-                `} 
-              />
-              <span className="text-xs font-medium">{item.label}</span>
-            </button>
-          ))}
-        </div>
+        <TabButton id="keyTopics" label="Key Topics" icon={FaChalkboardTeacher} />
+        <TabButton id="theorems" label="Theorems" icon={FaLightbulb} />
+        <TabButton id="gateQuestions" label="GATE Questions" icon={FaCalculator} />
+        <TabButton id="commonMistakes" label="Common Mistakes" icon={FaExclamationCircle} />
       </div>
     );
   };
@@ -562,56 +1048,26 @@ const TopicDocumentation = () => {
     );
   };
 
+  // Main render method
   return (
-    <div className={`
-      flex 
-      ${isMobileView ? 'flex-col' : 'flex-row'}
-      min-h-screen 
-      bg-gray-50 
-      transition-all 
-      duration-300 
-      ease-in-out
-      pb-16  // Add padding at bottom for mobile navigation
-    `}>
-      {/* Sidebar for Desktop / Mobile Navigation Area */}
-      <div className={`
-        ${isMobileView 
-          ? (mobileContentView === 'navigation' ? 'block' : 'hidden')
-          : 'w-1/4 min-w-[250px] border-r'}
-        bg-white 
-        shadow-md 
-        p-4 
-        overflow-y-auto
-      `}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-800">
-            {topicCategory ? topicCategory.replace(/-/g, ' ').toUpperCase() : 'Topics'}
-          </h2>
+    <div className="topic-documentation-container 
+      p-4 md:p-6 lg:p-8 
+      max-w-4xl 
+      mx-auto 
+      space-y-6
+    ">
+      {isMobileView ? (
+        renderMobileContent()
+      ) : (
+        <div className="flex bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="w-1/4 p-4 border-r bg-gray-50">
+            {renderTopicNavigation()}
+          </div>
+          <div className="w-3/4 p-6 overflow-y-auto">
+            {renderTopicContent()}
+          </div>
         </div>
-        
-        {/* Topic Navigation */}
-        <div className="space-y-2 max-h-[70vh] overflow-y-auto">
-          {renderTopicNavigation()}
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className={`
-        ${isMobileView 
-          ? (mobileContentView !== 'navigation' ? 'block' : 'hidden')
-          : 'w-3/4'}
-        bg-gray-50 
-        overflow-y-auto 
-        max-h-screen 
-        p-4 
-        md:p-8
-      `}>
-        {/* Render content based on active tab */}
-        {renderTopicContent()}
-      </div>
-
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNavigation />
+      )}
     </div>
   );
 };

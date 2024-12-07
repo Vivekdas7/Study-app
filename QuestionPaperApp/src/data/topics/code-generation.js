@@ -1,7 +1,7 @@
 export const codeGenerationData = {
   title: "Code Generation",
   introduction: "Code Generation is the final phase of compilation, transforming optimized intermediate representation into target machine code.",
-  
+
   keyTopics: [
     {
       title: "Target Machine Instruction Selection",
@@ -65,6 +65,45 @@ export const codeGenerationData = {
           "Code size considerations"
         ],
         answer: "Systematic code generation exploration"
+      }
+    },
+    {
+      year: 2020,
+      question: "What are the main objectives of code generation?",
+      solution: {
+        steps: [
+          "Generate correct and efficient machine code",
+          "Minimize the number of instructions",
+          "Optimize for the target architecture",
+          "Ensure compatibility with the execution environment"
+        ],
+        answer: "Correctness, efficiency, and compatibility are the primary objectives."
+      }
+    },
+    {
+      year: 2019,
+      question: "How is the graph coloring approach used in register allocation?",
+      solution: {
+        steps: [
+          "Represent the program's variables as a graph",
+          "Nodes represent variables, edges indicate conflicts",
+          "Assign colors (registers) to nodes to minimize conflicts",
+          "Handle spilling for uncolored nodes"
+        ],
+        answer: "Graph coloring efficiently maps variables to registers while minimizing conflicts."
+      }
+    },
+    {
+      year: 2018,
+      question: "What are the common trade-offs in instruction selection?",
+      solution: {
+        steps: [
+          "Balance between code size and execution speed",
+          "Optimize for frequently used instructions",
+          "Consider the complexity of the instruction set",
+          "Adapt to the target machine's architecture"
+        ],
+        answer: "Instruction selection requires careful optimization to balance performance and size."
       }
     }
   ],

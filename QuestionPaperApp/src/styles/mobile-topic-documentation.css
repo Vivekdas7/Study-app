@@ -1,0 +1,109 @@
+/* Mobile Topic Documentation Styles */
+.mobile-view .mobile-topic-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.mobile-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.mobile-section-header h3 {
+  margin: 0;
+  font-size: 16px;
+  flex-grow: 1;
+  margin-left: 12px;
+}
+
+.mobile-section-header .expand-icon {
+  transition: transform 0.3s ease;
+}
+
+.mobile-section-header .expand-icon.rotated {
+  transform: rotate(90deg);
+}
+
+.mobile-section-content {
+  padding: 16px;
+  background-color: white;
+}
+
+.mobile-topic-card,
+.mobile-theorem-card,
+.mobile-gate-question,
+.mobile-practice-problem {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.mobile-topic-card h4,
+.mobile-theorem-card h4,
+.mobile-gate-question h4,
+.mobile-practice-problem h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.mobile-formulas {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.mobile-gate-question .solution-details {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.mobile-gate-question .solution-details ul {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.problem-difficulty {
+  color: #666;
+  font-style: italic;
+}
+
+.mobile-common-mistake {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #fff3f3;
+  border-left: 4px solid #ff6b6b;
+  border-radius: 4px;
+}
+
+.mobile-common-mistake h4 {
+  margin-top: 0;
+  color: #d63031;
+  font-size: 16px;
+}
+
+.mobile-common-mistake strong {
+  color: #d63031;
+}
+
+@media (max-width: 768px) {
+  .mobile-section-header {
+    font-size: 14px;
+  }
+}
