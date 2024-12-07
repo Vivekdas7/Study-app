@@ -20,8 +20,19 @@ import {
   FaLightbulb,
   FaTrophy,
   FaChalkboard,
-  FaProjectDiagram
+  FaProjectDiagram,
+  FaJava,
+  FaReact,
+  FaBookOpen,
+  FaClock,
+  FaStar,
+  FaUnlock 
 } from 'react-icons/fa';
+
+// Import logos
+import JavascriptLogo from '../assets/images/javascript-logo.svg';
+import JavaLogo from '../assets/images/java-logo.svg';
+import ReactLogo from '../assets/images/react-logo.svg';
 
 // Animated Notification Component
 const Notification = ({ message, type }) => {
@@ -102,6 +113,212 @@ const QuickActionButton = ({ icon, title }) => (
   </motion.button>
 );
 
+// Course Card Component
+const CourseCard = ({ 
+  title, 
+  description, 
+  logo, 
+  bgColor, 
+  textColor, 
+  level, 
+  duration, 
+  rating,
+  skills,
+  courseRoute
+}) => {
+  return (
+    <div className={`
+      relative 
+      bg-white 
+      rounded-3xl 
+      shadow-xl 
+      overflow-hidden 
+      transition-all 
+      duration-300 
+      hover:shadow-2xl 
+      group
+      border 
+      border-gray-100 
+      hover:border-blue-200
+      transform 
+      hover:-translate-y-2
+      max-w-md 
+      mx-auto
+    `}>
+      {/* Course Header */}
+      <div className={`
+        p-6 
+        pb-4 
+        flex 
+        items-center 
+        justify-between 
+        ${bgColor} 
+        bg-opacity-10
+        border-b 
+        border-gray-100
+      `}>
+        <div className="flex items-center space-x-5">
+          <img 
+            src={logo} 
+            alt={`${title} Logo`} 
+            className="w-20 h-20 rounded-xl object-contain shadow-md"
+          />
+          <div>
+            <h3 className={`
+              text-3xl 
+              font-bold 
+              ${textColor} 
+              tracking-tight
+              mb-2
+            `}>
+              {title}
+            </h3>
+            <div className="flex items-center space-x-3">
+              <span className="
+                text-sm 
+                font-medium 
+                bg-gray-100 
+                text-gray-700 
+                px-3 
+                py-1 
+                rounded-full
+              ">
+                {level}
+              </span>
+              <div className="flex items-center text-yellow-500">
+                <FaStar className="mr-2" />
+                <span className="text-sm font-semibold text-gray-700">
+                  {rating}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Course Content */}
+      <div className="p-6 pt-4">
+        {/* Description */}
+        <p className="
+          text-gray-700 
+          mb-6 
+          text-base 
+          leading-relaxed 
+          min-h-[4.5rem] 
+          line-clamp-3
+        ">
+          {description}
+        </p>
+
+        {/* Skills */}
+        <div className="mb-6">
+          <h4 className="
+            text-base 
+            font-semibold 
+            text-gray-800 
+            mb-3
+          ">
+            Key Skills:
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, index) => (
+              <span 
+                key={index} 
+                className="
+                  bg-blue-50 
+                  text-blue-700 
+                  text-xs 
+                  px-3 
+                  py-1.5 
+                  rounded-full
+                  font-medium
+                  tracking-tight
+                "
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Course Details */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="
+            bg-gray-50 
+            p-4 
+            rounded-lg 
+            text-center 
+            hover:bg-blue-50 
+            transition-colors
+          ">
+            <FaClock className="
+              mx-auto 
+              mb-2 
+              text-green-500 
+              text-2xl
+            " />
+            <span className="
+              text-sm 
+              font-medium 
+              text-gray-700 
+              block
+            ">
+              {duration}
+            </span>
+          </div>
+          <div className="
+            bg-gray-50 
+            p-4 
+            rounded-lg 
+            text-center 
+            hover:bg-purple-50 
+            transition-colors
+          ">
+            <FaUnlock className="
+              mx-auto 
+              mb-2 
+              text-purple-500 
+              text-2xl
+            " />
+            <span className="
+              text-sm 
+              font-medium 
+              text-gray-700 
+              block
+            ">
+              Free Access
+            </span>
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <Link 
+          to={courseRoute} 
+          className={`
+            w-full 
+            block 
+            text-center 
+            py-4 
+            rounded-full 
+            font-bold 
+            text-white 
+            transition-all 
+            duration-300 
+            ${bgColor} 
+            hover:opacity-90
+            text-lg
+            shadow-md
+            group-hover:shadow-lg
+            active:scale-95
+          `}
+        >
+          Start Learning
+        </Link>
+      </div>
+    </div>
+  );
+};
+
 const HomeScreen = () => {
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
@@ -180,6 +397,45 @@ const HomeScreen = () => {
       link: '/doubt-solver'
     },
     
+  ];
+
+  const courses = [
+    {
+      title: 'Learn JavaScript',
+      description: 'Master modern JavaScript from beginner to advanced. Build interactive web applications with cutting-edge techniques.',
+      logo: JavascriptLogo,
+      bgColor: 'bg-gradient-to-br from-yellow-500 to-yellow-700',
+      textColor: 'text-yellow-900',
+      level: 'Beginner to Pro',
+      duration: '40 Hours',
+      rating: '4.8/5',
+      skills: ['ES6+', 'DOM', 'Async', 'Promises'],
+      courseRoute: '/course/javascript'
+    },
+    {
+      title: 'Learn Java',
+      description: 'Comprehensive Java programming course covering core concepts, object-oriented programming, and enterprise development.',
+      logo: JavaLogo,
+      bgColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
+      textColor: 'text-blue-900',
+      level: 'All Levels',
+      duration: '60 Hours',
+      rating: '4.7/5',
+      skills: ['OOP', 'Collections', 'Generics', 'Multithreading'],
+      courseRoute: '/course/java'
+    },
+    {
+      title: 'React Masterclass',
+      description: 'Deep dive into React ecosystem. Learn modern web development with React, hooks, state management, and advanced patterns.',
+      logo: ReactLogo,
+      bgColor: 'bg-gradient-to-br from-teal-500 to-teal-700',
+      textColor: 'text-teal-900',
+      level: 'Intermediate',
+      duration: '50 Hours',
+      rating: '4.9/5',
+      skills: ['Hooks', 'Redux', 'Routing', 'Context'],
+      courseRoute: '/course/react'
+    }
   ];
 
   return (
@@ -283,6 +539,73 @@ const HomeScreen = () => {
             />
           ))}
         </motion.div>
+
+        {/* Free Courses Section */}
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              Free Coding Courses
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+              Unlock your potential with our comprehensive, industry-aligned coding courses. 
+              Learn from beginner to advanced level, completely free.
+            </p>
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {courses.map((course, index) => (
+              <CourseCard 
+                key={index}
+                title={course.title}
+                description={course.description}
+                logo={course.logo}
+                bgColor={course.bgColor}
+                textColor={course.textColor}
+                level={course.level}
+                duration={course.duration}
+                rating={course.rating}
+                skills={course.skills}
+                courseRoute={course.courseRoute}
+              />
+            ))}
+          </motion.div>
+
+          <div className="text-center mt-16">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-xl mx-auto">
+                Our courses are designed to provide practical, real-world skills 
+                that employers are looking for in today's competitive tech landscape.
+              </p>
+              <Link 
+                to="/courses" 
+                className="
+                  inline-block 
+                  px-8 py-3 
+                  bg-blue-600 
+                  text-white 
+                  font-semibold 
+                  rounded-full 
+                  hover:bg-blue-700 
+                  transition-colors 
+                  shadow-md 
+                  hover:shadow-lg
+                  text-base sm:text-lg
+                "
+              >
+                Explore All Courses
+              </Link>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

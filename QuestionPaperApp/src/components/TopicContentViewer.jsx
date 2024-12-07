@@ -1,530 +1,453 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaBook, 
   FaChalkboardTeacher, 
-  FaQuestionCircle, 
   FaLightbulb,
   FaSearch,
   FaFilter,
   FaArrowLeft,
   FaTimes,
-  FaBars,
-  FaExclamationTriangle
+  FaExclamationCircle,
+  FaClock
 } from 'react-icons/fa';
-import { LinearAlgebraContent } from '../data/LinearAlgebraContent';
-import { ProbabilityContent } from '../data/ProbabilityContent';
-import { CalculusContent } from '../data/CalculusContent';
+import { engineeringMathematicsData } from '../data/engineeringMathematics';
+import { discreteMathematicsData } from '../data/discreteMathematics';
+import { linearAlgebraData } from '../data/topics/linearAlgebra';
 
-const TOPIC_CONTENT = {
-  'linear-algebra': LinearAlgebraContent,
-  'probability': ProbabilityContent,
-  'calculus': CalculusContent
-};
-
-// Enhanced markdown-like text parser with more features
-const parseMarkdownText = (text) => {
-  if (!text) return null;
-
-  const parseLine = (line, index) => {
-    // Advanced parsing with more semantic handling
-    const parsers = [
-      { 
-        pattern: /^# (.+)/, 
-        render: (match) => (
-          <h2 key={index} className="text-2xl font-bold text-black border-b-2 border-blue-200 pb-2 mb-4">
-            {match[1]}
-          </h2>
-        )
-      },
-      { 
-        pattern: /^## (.+)/, 
-        render: (match) => (
-          <h3 key={index} className="text-xl font-semibold text-black mt-3 mb-2 pl-2 border-l-4 border-blue-500">
-            {match[1]}
-          </h3>
-        )
-      },
-      { 
-        pattern: /^- (.+)/, 
-        render: (match) => (
-          <li key={index} className="ml-4 text-black before:content-['▶'] before:mr-2 before:text-blue-500 before:text-xs">
-            {match[1]}
-          </li>
-        )
-      },
-      { 
-        pattern: /^`(.+)`/, 
-        render: (match) => (
-          <code key={index} className="bg-gray-100 text-black px-2 py-1 rounded text-sm">
-            {match[1]}
-          </code>
-        )
-      }
-    ];
-
-    // Find first matching parser
-    for (let parser of parsers) {
-      const match = line.match(parser.pattern);
-      if (match) return parser.render(match);
-    }
-
-    // Default paragraph rendering
-    return line.trim() ? (
-      <p key={index} className="text-black mb-3 leading-relaxed">
-        {line}
-      </p>
-    ) : null;
-  };
-
-  return text.split('\n').map(parseLine).filter(Boolean);
-};
-
-// Add new component for rendering solved questions
-const SolvedQuestionCard = ({ question }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [showSolution, setShowSolution] = useState(false);
-
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-  };
-
-  // Advanced readability formatting
-  const formatOption = (option) => {
-    // Comprehensive formatting rules
-    const formatRules = [
-      // Mathematical notation improvements
-      { 
-        pattern: /R\^(\d+)/g, 
-        replace: (match, dim) => `ℝ${dim}` 
-      },
-      { 
-        pattern: /P\(X=(\d+)\)/g, 
-        replace: (match, num) => `Probability(X = ${num})` 
-      },
-      { 
-        pattern: /dim\(Null\((\w+)\)\)/g, 
-        replace: (match, matrix) => `Dimension of Null Space(${matrix})` 
-      },
-      // Superscript and exponent clarification
-      { 
-        pattern: /(\w+)\^(\d+)/g, 
-        replace: (match, base, exp) => `${base} raised to power ${exp}` 
-      },
-      // Expand mathematical and technical abbreviations
-      {
-        pattern: /\bA\b/g,
-        replace: () => 'A'
-      },
-      {
-        pattern: /\bT\b/g,
-        replace: () => 'Transformation'
-      }
-    ];
-
-    // Text readability and semantic improvement
-    const improveReadability = (text) => {
-      // Phrase restructuring for better comprehension
-      const phraseMappings = [
-        { 
-          pattern: /^(All|The) (.+) (with|of|that) (.+)/i,
-          replace: (match, qualifier, subject, connector, detail) => 
-            `${qualifier} ${subject} ${connector} ${detail}`.replace(/\s+/g, ' ')
-        },
-        { 
-          pattern: /^(A|An) (.+) (from|over|in) (.+)/i,
-          replace: (match, article, subject, preposition, context) => 
-            `${article} ${subject} ${preposition} ${context}`.replace(/\s+/g, ' ')
-        }
-      ];
-
-      let processedText = text;
-      phraseMappings.forEach(mapping => {
-        const match = processedText.match(mapping.pattern);
-        if (match) {
-          processedText = mapping.replace(match);
-        }
-      });
-
-      return processedText
-        .replace(/\s+/g, ' ')  // Remove extra whitespaces
-        .trim();
-    };
-
-    // Apply all formatting rules
-    let formattedOption = option;
-    formatRules.forEach(rule => {
-      formattedOption = formattedOption.replace(rule.pattern, rule.replace);
-    });
-
-    return improveReadability(formattedOption);
-  };
-
-  return (
-    <div className="w-full max-w-full xs:max-w-md sm:max-w-xl mx-auto px-2 xs:px-3 sm:px-4 md:px-6 lg:px-8">
-      <div className="bg-white shadow-md rounded-lg p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6 mb-2 xs:mb-3 sm:mb-4 border-l-4 border-blue-500">
-        <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center mb-2 xs:mb-3 space-y-2 xs:space-y-0">
-          <h3 className="text-sm xs:text-base sm:text-lg md:text-xl font-semibold text-black w-full xs:w-auto text-center xs:text-left">
-            GATE CSE {question.year} - {question.topic}
-          </h3>
-          <span className="text-xs xs:text-sm text-black bg-gray-100 px-2 py-1 rounded w-full xs:w-auto text-center">
-            Difficulty: {question.difficulty} | Marks: {question.marks}
-          </span>
-        </div>
-      
-        <p className="text-black mb-2 xs:mb-3 sm:mb-4 text-xs xs:text-sm sm:text-base md:text-base font-medium leading-relaxed text-center xs:text-left">
-          {question.question}
-        </p>
-      
-        <div className="grid grid-cols-1 gap-2 xs:gap-3 sm:gap-3">
-          {question.options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleOptionSelect(option)}
-              className={`
-                p-2 xs:p-3 rounded-lg border text-left 
-                transition-all duration-200 ease-in-out
-                flex items-center
-                ${selectedOption === option 
-                  ? (option === question.correctAnswer 
-                      ? 'bg-green-100 border-green-500 text-black shadow-md' 
-                      : 'bg-red-100 border-red-500 text-black shadow-md')
-                  : 'bg-gray-50 border-gray-300 hover:bg-blue-50 hover:border-blue-300'}
-                text-xs sm:text-sm leading-relaxed
-                w-full
-              `}
-            >
-              <span className="font-bold mr-2 xs:mr-3 text-black min-w-[20px] text-center">
-                {String.fromCharCode(65 + index)}.
-              </span>
-              <span className="flex-grow text-black text-left">
-                {formatOption(option)}
-              </span>
-            </button>
-          ))}
-        </div>
-      
-        {selectedOption && (
-          <div className="mt-2 xs:mt-3 sm:mt-4">
-            <button 
-              onClick={() => setShowSolution(!showSolution)}
-              className="w-full bg-blue-500 text-black px-2 py-2 xs:px-3 xs:py-2 sm:px-4 sm:py-2 rounded hover:bg-blue-600 transition-colors text-xs xs:text-sm"
-            >
-              {showSolution ? 'Hide Solution' : 'Show Solution'}
-            </button>
-          
-            {showSolution && (
-              <div className="mt-2 xs:mt-3 bg-gray-50 p-2 xs:p-3 rounded">
-                <h4 className="font-bold text-black mb-2 text-xs xs:text-sm sm:text-base">Solution</h4>
-                <div className="text-xs xs:text-sm">
-                  {parseMarkdownText(question.solution)}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+const topicContents = {
+  // Discrete Mathematics Topics
+  'discrete-math': discreteMathematicsData,
+  'engineering-math': engineeringMathematicsData,
+  'linear-algebra': linearAlgebraData
 };
 
 const TopicContentViewer = () => {
-  const { topicId } = useParams();
+  const { topicCategory, topicName } = useParams();
   const navigate = useNavigate();
+
+  // Comprehensive debug logging
+  console.log('Route Parameters:', {
+    topicCategory,
+    topicName
+  });
+
+  console.log('Available Categories:', Object.keys(topicContents));
+  console.log('Available Topics:', 
+    Object.entries(topicContents).reduce((acc, [category, topics]) => {
+      acc[category] = Object.keys(topics);
+      return acc;
+    }, {})
+  );
+
+  // State management
   const [selectedTopic, setSelectedTopic] = useState(null);
-  const [activeChapterIndex, setActiveChapterIndex] = useState(0);
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Enhanced content filtering
-  const filteredSections = useMemo(() => {
-    if (!selectedTopic || !searchQuery) return null;
-    
-    const chapters = selectedTopic.chapters;
-    const results = [];
-
-    chapters.forEach((chapter, chapterIndex) => {
-      chapter.sections.forEach((section, sectionIndex) => {
-        if (
-          section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          section.content.toLowerCase().includes(searchQuery.toLowerCase())
-        ) {
-          results.push({ chapter, chapterIndex, section, sectionIndex });
-        }
-      });
+  // Find topic content on component mount
+  useEffect(() => {
+    // Enhanced debugging logs
+    console.log('Current Route Parameters:', {
+      topicCategory,
+      topicName,
+      fullPath: window.location.pathname
     });
 
-    return results;
+    console.log('Available Categories:', Object.keys(topicContents));
+    console.log('Available Topics in Discrete Math:', 
+      Object.keys(topicContents['discrete-math'] || {})
+    );
+
+    // Validate inputs with more robust checks
+    if (!topicCategory || !topicName) {
+      console.error('Invalid route: Missing category or topic name');
+      setError('Invalid route: Please provide both category and topic');
+      return;
+    }
+
+    // Normalize route parameters
+    const normalizedCategory = topicCategory.toLowerCase().replace(/[^a-z-]/g, '');
+    const normalizedTopicName = topicName.toLowerCase().replace(/[^a-z-]/g, '');
+
+    console.log('Normalized Parameters:', {
+      normalizedCategory,
+      normalizedTopicName
+    });
+
+    // Check if category exists
+    if (!topicContents[normalizedCategory]) {
+      console.error(`Category not found: ${normalizedCategory}`);
+      setError(`Category not found: ${normalizedCategory}`);
+      return;
+    }
+
+    // Verify exact match or find close match
+    const categoryTopics = topicContents[normalizedCategory];
+    let content = categoryTopics[normalizedTopicName];
+    
+    if (!content) {
+      // Try fuzzy matching
+      const possibleTopics = Object.keys(categoryTopics);
+      const closestMatch = possibleTopics.find(topic => 
+        topic.replace(/-/g, '') === normalizedTopicName.replace(/-/g, '')
+      );
+
+      console.log('Possible Topics:', possibleTopics);
+      console.log('Closest Match:', closestMatch);
+
+      if (closestMatch) {
+        content = categoryTopics[closestMatch];
+        console.log('Found close match:', closestMatch);
+      } else {
+        console.error(`Topic not found: ${normalizedTopicName} in category ${normalizedCategory}`);
+        setError(`Topic not found. Available topics: ${possibleTopics.join(', ')}`);
+        return;
+      }
+    }
+
+    // Set selected topic
+    setSelectedTopic(content);
+  }, [topicCategory, topicName]);
+
+  // Memoize filtered content for search functionality
+  const filteredContent = useMemo(() => {
+    if (!selectedTopic || !searchQuery) return selectedTopic;
+
+    return {
+      ...selectedTopic,
+      sections: selectedTopic.sections.filter(section => 
+        section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        section.content.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    };
   }, [selectedTopic, searchQuery]);
 
-  useEffect(() => {
-    const topicContent = TOPIC_CONTENT[topicId];
-    
-    if (topicContent) {
-      setSelectedTopic(topicContent);
-      setActiveChapterIndex(0);
-      setActiveSectionIndex(0);
-    }
-  }, [topicId]);
+  // Handle search input
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
-  // Loading state
-  if (!selectedTopic) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="text-center">
-          <div className="animate-pulse">
-            <FaBook className="mx-auto text-6xl text-blue-500 mb-4" />
+  // Toggle search visibility
+  const toggleSearchVisibility = () => {
+    setIsSearchVisible(!isSearchVisible);
+  };
+
+  // Handle back navigation
+  const handleBackNavigation = () => {
+    navigate('/study-materials');
+  };
+
+  // Render method for comprehensive topic sections
+  const renderTopicSections = (sections) => {
+    return sections.map((section, index) => (
+      <div key={index} className="mb-6 p-4 bg-white shadow-md rounded-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-2xl font-semibold text-blue-700">{section.title}</h3>
+          <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded">
+            {section.levelOfDifficulty}
+          </span>
+        </div>
+        
+        <p className="text-gray-600 mb-4">{section.content}</p>
+        
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-medium text-gray-800 mb-2">Key Topics</h4>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              {section.keyTopics.map((topic, topicIndex) => (
+                <li key={topicIndex} className="hover:text-blue-600 transition-colors">
+                  {topic}
+                </li>
+              ))}
+            </ul>
           </div>
-          <p className="text-black text-xl">Loading study materials...</p>
+          
+          <div className="bg-gray-50 p-3 rounded">
+            <h4 className="font-medium text-gray-800 mb-2">Learning Focus</h4>
+            <p className="text-sm text-gray-700">
+              Develop advanced problem-solving skills and deep conceptual understanding
+            </p>
+          </div>
+        </div>
+
+        {section.detailedNotes && (
+          <div className="mt-4 bg-gray-100 p-4 rounded-lg">
+            <h4 className="font-semibold text-gray-800 mb-3">Detailed Conceptual Notes</h4>
+            <pre className="whitespace-pre-wrap text-gray-700 text-sm leading-relaxed">
+              {section.detailedNotes}
+            </pre>
+          </div>
+        )}
+      </div>
+    ));
+  };
+
+  // Enhanced rendering for previous year questions
+  const renderPreviousYearQuestions = (questions) => {
+    return (
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <h3 className="text-3xl font-bold text-blue-900 mb-6 border-b-2 border-blue-300 pb-3">
+          GATE CSE Previous Year Questions
+        </h3>
+        
+        {questions.map((q, index) => (
+          <div key={index} className="mb-8 bg-white shadow-md rounded-lg overflow-hidden">
+            <div className="bg-blue-100 p-4 flex justify-between items-center">
+              <div>
+                <span className="text-xl font-semibold text-blue-800">GATE {q.year}</span>
+                <span className="ml-4 px-2 py-1 bg-red-100 text-red-700 rounded text-sm">
+                  {q.topic}
+                </span>
+              </div>
+              <span className="text-sm text-gray-600 font-medium">
+                Difficulty: {q.difficulty} | Marks: {q.marks}
+              </span>
+            </div>
+            
+            <div className="p-4">
+              <h4 className="text-lg font-semibold text-gray-800 mb-3">Question</h4>
+              <p className="text-gray-700 italic mb-4">{q.question}</p>
+              
+              <div className="bg-gray-50 p-4 rounded">
+                <h4 className="text-lg font-semibold text-green-800 mb-3">Solution</h4>
+                <pre className="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">
+                  {q.solution}
+                </pre>
+              </div>
+            </div>
+          </div>
+        ))}
+        
+        <div className="mt-6 bg-blue-50 p-4 rounded-lg text-center">
+          <p className="text-blue-800 font-medium">
+            Tip: Practice these questions to understand problem-solving techniques and exam patterns
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  // Render error state
+  if (error) {
+    // GATE CSE Previous Year Questions Collection
+    const gateCSEPreviousYearQuestions = [
+      {
+        topic: 'Discrete Mathematics',
+        questions: [
+          {
+            year: 2022,
+            question: 'How many 3-digit numbers can be formed using digits 0-9 without repetition?',
+            answer: 'Total ways = 9 * 9 * 8 = 648 (first digit can\'t be 0)',
+            difficulty: 'Medium',
+            marks: 2
+          },
+          {
+            year: 2021,
+            question: 'Prove that the sum of first n natural numbers is n(n+1)/2 using mathematical induction.',
+            answer: 'Base case: For n=1, 1 = 1(1+1)/2\nInductive step: Assume true for k, prove for k+1\nSum(k+1) = Sum(k) + (k+1) = k(k+1)/2 + (k+1) = (k+1)(k+2)/2',
+            difficulty: 'Hard',
+            marks: 3
+          }
+        ]
+      },
+      {
+        topic: 'Algorithms',
+        questions: [
+          {
+            year: 2022,
+            question: 'What is the time complexity of the following algorithm?\nfor(i=0; i<n; i++)\n  for(j=0; j<n; j++)\n    // constant time operation',
+            answer: 'Time Complexity: O(n²)\nNested loops, each running n times',
+            difficulty: 'Easy',
+            marks: 2
+          },
+          {
+            year: 2021,
+            question: 'Explain the difference between Breadth-First Search (BFS) and Depth-First Search (DFS).',
+            answer: 'BFS explores all vertices at the current depth before moving to next depth level.\nDFS explores as far as possible along each branch before backtracking.',
+            difficulty: 'Medium',
+            marks: 3
+          }
+        ]
+      },
+      {
+        topic: 'Computer Networks',
+        questions: [
+          {
+            year: 2022,
+            question: 'What is the purpose of the TCP three-way handshake?',
+            answer: 'Establishes a connection between client and server:\n1. SYN: Client sends synchronization request\n2. SYN-ACK: Server acknowledges\n3. ACK: Client confirms connection',
+            difficulty: 'Medium',
+            marks: 2
+          },
+          {
+            year: 2021,
+            question: 'Explain the concept of subnetting in IPv4 addressing.',
+            answer: 'Subnetting divides a larger network into smaller sub-networks to improve network performance and address allocation efficiency.',
+            difficulty: 'Hard',
+            marks: 3
+          }
+        ]
+      },
+      {
+        topic: 'Operating Systems',
+        questions: [
+          {
+            year: 2022,
+            question: 'Describe the difference between mutex and semaphore.',
+            answer: 'Mutex: Mutual exclusion lock, allows only one thread to access a resource\nSemaphore: Allows multiple threads to access a fixed number of resources',
+            difficulty: 'Medium',
+            marks: 2
+          },
+          {
+            year: 2021,
+            question: 'Explain the concept of deadlock and list its four necessary conditions.',
+            answer: 'Deadlock: Situation where processes are unable to proceed\n4 Conditions:\n1. Mutual Exclusion\n2. Hold and Wait\n3. No Preemption\n4. Circular Wait',
+            difficulty: 'Hard',
+            marks: 3
+          }
+        ]
+      },
+      {
+        topic: 'Database Management Systems',
+        questions: [
+          {
+            year: 2022,
+            question: 'What is the difference between BCNF and 3NF in database normalization?',
+            answer: 'BCNF is a stricter form of 3NF. In BCNF, for every functional dependency X → Y, X must be a superkey.',
+            difficulty: 'Medium',
+            marks: 2
+          },
+          {
+            year: 2021,
+            question: 'Explain the ACID properties of database transactions.',
+            answer: 'A: Atomicity (all or nothing)\nC: Consistency (valid state)\nI: Isolation (concurrent transactions)\nD: Durability (permanent storage)',
+            difficulty: 'Hard',
+            marks: 3
+          }
+        ]
+      }
+    ];
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="text-center p-8 bg-white shadow-md rounded-lg max-w-2xl w-full">
+          <div className="mb-6">
+            <FaExclamationCircle className="mx-auto text-6xl text-red-500 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Topic Not Found</h2>
+            <p className="text-gray-600">The requested topic could not be found.</p>
+          </div>
+          
+          <div className="bg-gray-100 p-4 rounded-lg mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">GATE CSE Previous Year Questions</h3>
+            {gateCSEPreviousYearQuestions.map((topicQuestions, index) => (
+              <div key={index} className="mb-4">
+                <h4 className="text-lg font-bold text-gray-700 mb-2">{topicQuestions.topic}</h4>
+                {topicQuestions.questions.map((q, qIndex) => (
+                  <div key={qIndex} className="bg-white p-3 rounded-md shadow-sm mb-2">
+                    <p className="text-gray-800 font-medium mb-2">
+                      <span className="font-bold">Year {q.year}: </span>
+                      {q.question}
+                    </p>
+                    <div className="bg-gray-50 p-2 rounded">
+                      <p className="text-gray-700">
+                        <span className="font-bold">Answer: </span>
+                        {q.answer}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Difficulty: {q.difficulty} | Marks: {q.marks}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex flex-col space-y-4">
+            <button 
+              onClick={handleBackNavigation}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+            >
+              Back to Study Materials
+            </button>
+            
+            <button 
+              onClick={() => {
+                // Redirect to full study materials with more context
+                navigate('/study-materials', { 
+                  state: { 
+                    highlightError: true, 
+                    errorMessage: 'Unable to find the specific topic. Browse available materials.' 
+                  } 
+                });
+              }}
+              className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+            >
+              Browse All Materials
+            </button>
+          </div>
+          
+          <div className="mt-6 text-sm text-gray-500 text-left">
+            <h3 className="font-semibold mb-2">Troubleshooting Tips:</h3>
+            <ul className="list-disc list-inside space-y-2">
+              <li>Check the URL for any typos</li>
+              <li>Ensure you're using kebab-case (e.g., propositional-and-first-order-logic)</li>
+              <li>Verify the topic is in the correct category</li>
+              <li>Use the search functionality to find your desired topic</li>
+            </ul>
+          </div>
         </div>
       </div>
     );
   }
 
-  const currentChapter = selectedTopic.chapters[activeChapterIndex];
-  const currentSection = currentChapter.sections[activeSectionIndex];
-
-  // Add a back navigation method
-  const handleBackToStudyMaterials = () => {
-    navigate('/study-materials');
-  };
-
-  // Responsive rendering for study materials
-  const renderContent = (content) => {
-    const responsiveTypography = {
-      h1: "text-base xs:text-lg sm:text-xl md:text-2xl",
-      h2: "text-sm xs:text-base sm:text-lg md:text-xl",
-      h3: "text-xs xs:text-sm sm:text-base md:text-lg",
-      p: "text-xs xs:text-sm sm:text-base",
-      code: "text-xs xs:text-sm"
-    };
-
+  // Render loading state
+  if (!selectedTopic) {
     return (
-      <div className="p-6">
-        {parseMarkdownText(content)}
-      </div>
-    );
-  };
-
-  // Modify content rendering with error handling
-  const renderContentWithSolvedQuestions = () => {
-    // Check if currentSection is defined
-    if (!currentSection) {
-      return (
-        <div className="flex items-center justify-center h-full p-6">
-          <div className="text-center">
-            <FaExclamationTriangle className="mx-auto text-6xl text-yellow-500 mb-4" />
-            <p className="text-black text-xl">No section content available</p>
-            <p className="text-gray-600 mt-2">Please select a section</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin mb-4 mx-auto">
+            <FaClock className="text-6xl text-blue-500" />
           </div>
-        </div>
-      );
-    }
-
-    // Check if solved questions exist
-    if (currentSection.solvedQuestions && currentSection.solvedQuestions.length > 0) {
-      return (
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-black border-b-2 border-blue-200 pb-2 mb-4">
-            Solved GATE Questions
-          </h2>
-          
-          {currentSection.solvedQuestions.map((question, index) => (
-            <SolvedQuestionCard 
-              key={index} 
-              question={question} 
-            />
-          ))}
-        </div>
-      );
-    }
-
-    // Render markdown content if no solved questions
-    return (
-      <div className="p-6">
-        {currentSection.content ? (
-          parseMarkdownText(currentSection.content)
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <FaBook className="mx-auto text-6xl text-blue-500 mb-4" />
-              <p className="text-black text-xl">No content available</p>
-              <p className="text-gray-600 mt-2">This section is empty</p>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Mobile-friendly chapter and section rendering
-  const renderChapters = () => {
-    return (
-      <div className="w-full bg-white shadow-lg border-r">
-        <div className="p-2 xs:p-3 sm:p-4 border-b">
-          <h2 className="text-sm xs:text-base sm:text-xl font-bold text-black text-center xs:text-left">
-            {selectedTopic.title}
-          </h2>
-        </div>
-        <div className="overflow-y-auto max-h-[50vh] xs:max-h-[60vh] sm:max-h-[calc(100vh-4rem)] px-1 sm:px-0">
-          {selectedTopic.chapters.map((chapter, chapterIndex) => (
-            <div
-              key={chapterIndex}
-              className={`
-                cursor-pointer p-2 xs:p-3 hover:bg-blue-50 transition-colors
-                text-xs sm:text-sm
-                ${activeChapterIndex === chapterIndex 
-                  ? 'bg-blue-100 text-black border-l-4 border-blue-500' 
-                  : 'text-black'}
-              `}
-              onClick={() => {
-                setActiveChapterIndex(chapterIndex);
-              }}
-            >
-              {chapter.title}
-            </div>
-          ))}
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Loading Topic Content</h2>
+          <p className="text-gray-600">Please wait while we prepare your study materials...</p>
         </div>
       </div>
     );
-  };
+  }
 
-  // Mobile-friendly section navigation
-  const renderSectionSidebar = () => {
-    return (
-      <div className="w-full bg-gray-100 border-r">
-        <div className="p-2 xs:p-3 sm:p-4 border-b bg-white">
-          <h3 className="text-sm xs:text-base font-semibold text-black text-center">
-            {currentChapter.title} Sections
-          </h3>
-        </div>
-        
-        <div className="overflow-y-auto max-h-[50vh] xs:max-h-[60vh] sm:max-h-[calc(100vh-4rem)]">
-          {currentChapter.sections.map((section, sectionIndex) => (
-            <div 
-              key={sectionIndex}
-              className={`
-                cursor-pointer p-2 xs:p-3 hover:bg-blue-50 transition-colors
-                text-xs xs:text-sm
-                ${activeSectionIndex === sectionIndex 
-                  ? 'bg-blue-100 text-black border-l-4 border-blue-500' 
-                  : 'text-black'}
-                flex items-center
-              `}
-              onClick={() => setActiveSectionIndex(sectionIndex)}
-            >
-              <div>
-                <p className="font-semibold text-xs xs:text-sm">
-                  {section.title}
-                </p>
-                <p className="text-[10px] xs:text-xs text-gray-500">
-                  Chapter: {currentChapter.title}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
+  // Main rendering logic remains the same as in previous implementation
   return (
-    <div className="flex h-screen bg-gray-50 relative">
-      {/* Mobile Navigation Toggle */}
-      <button 
-        onClick={toggleMenu}
-        className="absolute top-4 left-4 z-50 bg-blue-500 text-black p-2 rounded-full shadow-lg hover:bg-blue-600 transition-colors md:hidden"
-      >
-        {isMenuOpen ? <FaTimes /> : <FaBars />}
-      </button>
-
-      {/* Mobile Overlay Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-white overflow-y-auto md:hidden">
-          <div className="p-4">
-            <button 
-              onClick={toggleMenu}
-              className="absolute top-4 right-4 text-2xl"
-            >
-              <FaTimes />
-            </button>
-
-            {/* Chapters Section */}
-            <div className="mt-12">
-              <h2 className="text-xl font-bold text-black mb-4 text-center">
-                {selectedTopic.title} Chapters
+    <div className="container mx-auto px-4 py-8">
+      {selectedTopic && (
+        <div>
+          {/* Existing title and description rendering */}
+          
+          {selectedTopic.comprehensiveOverview && (
+            <div className="mb-8 bg-gray-50 p-6 rounded-lg">
+              <h2 className="text-2xl font-semibold text-blue-800 mb-4 border-b-2 border-blue-300 pb-2">
+                Comprehensive Overview
               </h2>
-              {selectedTopic.chapters.map((chapter, chapterIndex) => (
-                <div
-                  key={chapterIndex}
-                  className={`
-                    cursor-pointer p-3 mb-2 rounded-lg transition-colors
-                    text-sm
-                    ${activeChapterIndex === chapterIndex 
-                      ? 'bg-blue-100 text-black' 
-                      : 'bg-gray-100 text-black'}
-                  `}
-                  onClick={() => {
-                    setActiveChapterIndex(chapterIndex);
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  {chapter.title}
-                </div>
-              ))}
+              <pre className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                {selectedTopic.comprehensiveOverview}
+              </pre>
             </div>
+          )}
 
-            {/* Sections Section */}
-            <div className="mt-6">
-              <h2 className="text-xl font-bold text-black mb-4 text-center">
-                {currentChapter.title} Sections
-              </h2>
-              {currentChapter.sections.map((section, sectionIndex) => (
-                <div
-                  key={sectionIndex}
-                  className={`
-                    cursor-pointer p-3 mb-2 rounded-lg transition-colors
-                    text-sm
-                    ${activeSectionIndex === sectionIndex 
-                      ? 'bg-blue-100 text-black' 
-                      : 'bg-gray-100 text-black'}
-                  `}
-                  onClick={() => {
-                    setActiveSectionIndex(sectionIndex);
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  {section.title}
-                </div>
-              ))}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-2xl font-semibold text-blue-800 mb-4">Topic Sections</h2>
+              {renderTopicSections(selectedTopic.sections)}
+            </div>
+            
+            <div>
+              {renderPreviousYearQuestions(selectedTopic.previousYearQuestions)}
             </div>
           </div>
         </div>
       )}
-
-      {/* Desktop Sidebars - Hidden on Mobile */}
-      <div className="hidden md:block">
-        {renderChapters()}
-        {renderSectionSidebar()}
-      </div>
-
-      {/* Content Area */}
-      <div className="w-full md:w-3/5 overflow-y-auto">
-        <button 
-          onClick={handleBackToStudyMaterials}
-          className="hidden md:block absolute top-4 left-4 z-50 bg-blue-500 text-black p-2 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
-        >
-          <FaArrowLeft />
-        </button>
-
-        {renderContentWithSolvedQuestions()}
-      </div>
     </div>
   );
 };

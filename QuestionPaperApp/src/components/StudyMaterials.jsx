@@ -1,258 +1,640 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  FaBook, 
-  FaFilePdf, 
-  FaCode, 
-  FaIndustry, 
-  FaCalculator, 
-  FaFilter, 
-  FaDownload 
+import { Link } from 'react-router-dom';
+import {
+  FaBook,
+  FaCalculator,
+  FaChartLine,
+  FaCode,
+  FaDatabase,
+  FaNetworkWired,
+  FaCogs,
+  FaLaptopCode,
+  FaChevronDown,
+  FaChevronRight,
+  FaStar,
+  FaSort,
+  FaProjectDiagram,
+  FaSearch,
+  FaKey,
+  FaMemory,
+  FaSync,
+  FaExclamationTriangle,
+  FaMicrochip,
+  FaFolder,
+  FaDesktop,
+  FaHdd,
+  FaLayerGroup,
+  FaServer,
+  FaRoad,
+  FaShieldAlt,
+  FaExchangeAlt,
+  FaTachometerAlt,
+  FaCodeBranch,
+  FaRegKeyboard,
+  FaLanguage,
+  FaStackOverflow,
+  FaFile,
+  FaTree,
+  FaCheckCircle,
+  FaCompress,
+  FaClock,
+  FaTable,
+  FaLink,
+  FaCube
 } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-
-const SUBJECT_ICONS = {
-  'Mathematics': <FaCalculator className="text-blue-500" />,
-  'Computer Science': <FaCode className="text-green-500" />,
-  'Mechanical Engineering': <FaIndustry className="text-red-500" />,
-  'Electrical Engineering': <FaBook className="text-purple-500" />
-};
 
 const StudyMaterials = () => {
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState(null);
-  const [selectedType, setSelectedType] = useState(null);
+  const [expandedSubjects, setExpandedSubjects] = useState({});
 
-  const materials = [
-    { 
-      id: 1, 
-      title: 'Engineering Mathematics Notes for GATE CSE', 
-      subject: 'Mathematics', 
-      type: 'PDF',
-      description: 'Comprehensive engineering mathematics notes for GATE CSE',
+  const toggleSubject = (subject) => {
+    setExpandedSubjects(prev => ({
+      ...prev,
+      [subject]: !prev[subject]
+    }));
+  };
+
+  const subjects = [
+    {
+      id: 'engineering-math',
+      name: 'Engineering Mathematics',
+      icon: <FaCalculator className="text-blue-500" />,
       topics: [
         {
           name: 'Linear Algebra',
-          description: 'Vectors, matrices, eigenvalues, eigenvectors, and linear transformations',
-          downloadLink: '/topic/linear-algebra'
+          route: 'linear-algebra',
+          description: 'Fundamental concepts of vector spaces, linear transformations, and matrix theory'
+        },
+        {
+          name: 'Vector Spaces',
+          route: 'vector-spaces',
+          description: 'Structure, properties, and applications of vector spaces and subspaces'
+        },
+        {
+          name: 'Linear Transformations',
+          route: 'linear-transformations',
+          description: 'Mappings between vector spaces, matrix representations, and fundamental properties'
+        },
+        {
+          name: 'Eigenvalues and Eigenvectors',
+          route: 'eigenvalues-eigenvectors',
+          description: 'Special vectors and scalars, computational techniques, and applications'
         },
         {
           name: 'Probability',
-          description: 'Probability distributions, random variables, expectation, and statistical inference',
-          downloadLink: '/topic/probability'
+          route: 'probability',
+          description: 'Probability distributions, random variables, and statistical inference'
         },
         {
           name: 'Calculus',
-          description: 'Limits, continuity, differentiation, integration, and multivariate calculus',
-          downloadLink: '/topic/calculus'
+          route: 'calculus',
+          description: 'Limits, continuity, differentiation, integration, and multivariate calculus'
         }
-      ],
-      expandedView: true
+      ]
     },
-    { 
-      id: 2, 
-      title: 'Discrete Mathematics Notes for GATE CSE', 
-      subject: 'Mathematics', 
-      type: 'PDF',
-      description: 'Comprehensive discrete mathematics notes for GATE CSE preparation',
+    {
+      id: 'discrete-math',
+      name: 'Discrete Mathematics',
+      icon: <FaChartLine className="text-green-500" />,
       topics: [
         {
-          name: 'Propositional and First-Order Logic',
-          description: 'Logical connectives, truth tables, quantifiers, and predicate logic',
-          downloadLink: '/topic/logic'
+          name: 'Propositional Logic',
+          route: 'propositional-logic',
+          description: 'Logical reasoning, propositions, truth values, and logical connectives'
         },
         {
-          name: 'Sets, Relations, and Functions',
-          description: 'Set theory, relations, function types, partial orders, and lattices',
-          downloadLink: '/topic/sets-relations'
-        },
-        {
-          name: 'Algebraic Structures',
-          description: 'Monoids, groups, algebraic properties, and abstract algebra concepts',
-          downloadLink: '/topic/algebraic-structures'
-        },
-        {
-          name: 'Combinatorics',
-          description: 'Counting techniques, recurrence relations, and generating functions',
-          downloadLink: '/topic/combinatorics'
+          name: 'Sets and Relations',
+          route: 'sets-and-relations',
+          description: 'Set theory fundamentals, operations, and relational structures'
         },
         {
           name: 'Graph Theory',
-          description: 'Graph connectivity, matching algorithms, graph coloring, and advanced graph concepts',
-          downloadLink: '/topic/graph-theory'
+          route: 'graph-theory',
+          description: 'Graph structures, algorithms, and network modeling techniques'
+        },
+        {
+          name: 'Combinatorics',
+          route: 'combinatorics',
+          description: 'Counting techniques, permutations, combinations, and advanced counting strategies'
         }
-      ],
-      expandedView: true
+      ]
     },
-    { 
-      id: 3, 
-      title: 'Computer Networks Textbook', 
-      subject: 'Computer Science', 
-      type: 'PDF',
-      description: 'In-depth guide to modern computer networking technologies',
-      downloadLink: 'https://example.com/networks-textbook.pdf'
+    {
+      id: 'algorithms',
+      name: 'Algorithms',
+      icon: <FaCode className="text-green-500" />,
+      topics: [
+        {
+          name: 'Algorithm Design',
+          route: 'algorithm-design',
+          description: 'Learn fundamental principles of designing efficient algorithms',
+          icon: <FaCode />
+        },
+        {
+          name: 'Data Structures',
+          route: 'data-structures',
+          description: 'Explore various data structures and their implementation',
+          icon: <FaDatabase />
+        },
+        {
+          name: 'Sorting Algorithms',
+          route: 'sorting-algorithms',
+          description: 'Master different sorting techniques and their complexities',
+          icon: <FaSort />
+        },
+        {
+          name: 'Graph Algorithms',
+          route: 'graph-algorithms',
+          description: 'Understand advanced graph traversal and optimization techniques',
+          icon: <FaProjectDiagram />
+        },
+        {
+          name: 'Asymptotic Analysis',
+          route: 'asymptotic-analysis',
+          description: 'Time and space complexity analysis of algorithms',
+          icon: <FaChartLine />
+        },
+        {
+          name: 'Recurrence Relations',
+          route: 'recurrence-relations',
+          description: 'Solving recursive algorithm complexity',
+          icon: <FaCalculator />
+        },
+        {
+          name: 'Divide and Conquer',
+          route: 'divide-and-conquer',
+          description: 'Problem-solving strategy for complex algorithms',
+          icon: <FaNetworkWired />
+        },
+        {
+          name: 'Greedy Techniques',
+          route: 'greedy-techniques',
+          description: 'Optimization algorithms with local best choices',
+          icon: <FaCogs />
+        },
+        {
+          name: 'Dynamic Programming',
+          route: 'dynamic-programming',
+          description: 'Advanced problem-solving with memoization',
+          icon: <FaLaptopCode />
+        },
+        {
+          name: 'Searching Techniques',
+          route: 'searching-techniques',
+          description: 'Efficient methods for finding elements',
+          icon: <FaSearch />
+        },
+        {
+          name: 'Hashing Techniques',
+          route: 'hashing-techniques',
+          description: 'Data storage and retrieval optimization',
+          icon: <FaKey />
+        },
+      ]
     },
-    { 
-      id: 4, 
-      title: 'Mechanical Engineering Handbook', 
-      subject: 'Mechanical Engineering', 
-      type: 'PDF',
-      description: 'Comprehensive reference for mechanical engineering principles',
-      downloadLink: 'https://example.com/mech-handbook.pdf'
+    {
+      id: 'operating-systems',
+      name: 'Operating Systems',
+      icon: <FaCogs className="text-purple-500" />,
+      topics: [
+        {
+          name: 'Processes',
+          route: 'processes',
+          description: 'Process states, lifecycle, and management',
+          icon: <FaCogs />
+        },
+        {
+          name: 'Threads',
+          route: 'threads',
+          description: 'Thread types, synchronization, and concurrency',
+          icon: <FaSync />
+        },
+        {
+          name: 'Inter-process Communication',
+          route: 'inter-process-communication',
+          description: 'Communication mechanisms between processes',
+          icon: <FaNetworkWired />
+        },
+        {
+          name: 'Concurrency and Synchronization',
+          route: 'concurrency-synchronization',
+          description: 'Managing simultaneous process execution',
+          icon: <FaProjectDiagram />
+        },
+        {
+          name: 'Main Memory Management',
+          route: 'main-memory-management',
+          description: 'Memory allocation and optimization strategies',
+          icon: <FaMemory />
+        },
+        {
+          name: 'Virtual Memory',
+          route: 'virtual-memory',
+          description: 'Advanced memory management techniques',
+          icon: <FaDatabase />
+        },
+        {
+          name: 'Disk Scheduling',
+          route: 'disk-scheduling',
+          description: 'Optimizing disk access and I/O performance',
+          icon: <FaHdd />
+        }
+      ]
     },
-    { 
-      id: 5, 
-      title: 'Digital Electronics Guide', 
-      subject: 'Electrical Engineering', 
-      type: 'PDF',
-      description: 'Detailed exploration of digital circuit design and analysis',
-      downloadLink: 'https://example.com/digital-electronics.pdf'
+    {
+      id: 'databases',
+      name: 'Database Management',
+      icon: <FaDatabase className="text-green-500" />,
+      topics: [
+        {
+          name: 'Database Concepts',
+          route: 'database-concepts',
+          description: 'Fundamental data models and database architectures',
+          icon: <FaBook />
+        },
+        {
+          name: 'Relational Database Model',
+          route: 'relational-database-model',
+          description: 'Principles of relational data organization',
+          icon: <FaProjectDiagram />
+        },
+        {
+          name: 'Normalization',
+          route: 'normalization',
+          description: 'Techniques for reducing data redundancy',
+          icon: <FaSort />
+        },
+        {
+          name: 'SQL',
+          route: 'sql',
+          description: 'Database querying and manipulation language',
+          icon: <FaCode />
+        },
+        {
+          name: 'Transaction Management',
+          route: 'transaction-management',
+          description: 'Ensuring data integrity and consistency',
+          icon: <FaKey />
+        },
+        {
+          name: 'Indexing',
+          route: 'indexing',
+          description: 'Performance optimization techniques',
+          icon: <FaChartLine />
+        },
+        {
+          name: 'Query Processing',
+          route: 'query-processing',
+          description: 'Efficient query execution strategies',
+          icon: <FaSearch />
+        }
+      ]
+    },
+    {
+      id: 'theory-of-computation',
+      name: 'Theory of Computation',
+      icon: <FaMicrochip className="text-indigo-500" />,
+      topics: [
+        {
+          title: 'Finite Automata',
+          route: 'finite-automata',
+          icon: FaCodeBranch,
+          description: 'Computational models for pattern recognition and language processing'
+        },
+        {
+          title: 'Regular Expressions',
+          route: 'regular-expressions',
+          icon: FaRegKeyboard,
+          description: 'Pattern matching techniques and formal language representation'
+        },
+        {
+          title: 'Context-Free Grammars',
+          route: 'context-free-grammars',
+          icon: FaLanguage,
+          description: 'Formal systems for describing programming language syntax'
+        },
+        {
+          title: 'Pushdown Automata',
+          route: 'pushdown-automata',
+          icon: FaStackOverflow,
+          description: 'Computational models with stack memory for context-free languages'
+        },
+        {
+          title: 'Turing Machines',
+          route: 'turing-machines',
+          icon: FaMicrochip,
+          description: 'Theoretical computational models representing algorithmic limits'
+        },
+        {
+          title: 'Computability Theory',
+          route: 'computability-theory',
+          icon: FaCalculator,
+          description: 'Exploring fundamental limits of algorithmic computation'
+        },
+        {
+          title: 'Formal Languages',
+          route: 'formal-languages',
+          icon: FaFile,
+          description: 'Mathematical framework for computational language structures'
+        }
+      ]
+    },
+    {
+      id: 'compiler-design',
+      name: 'Compiler Design',
+      icon: <FaCode className="text-green-500" />,
+      topics: [
+        {
+          title: 'Lexical Analysis',
+          route: 'lexical-analysis',
+          icon: FaSearch,
+          description: 'Token recognition and pattern matching in source code'
+        },
+        {
+          title: 'Syntax Analysis',
+          route: 'syntax-analysis',
+          icon: FaTree,
+          description: 'Parsing techniques and grammatical structure verification'
+        },
+        {
+          title: 'Semantic Analysis',
+          route: 'semantic-analysis',
+          icon: FaCheckCircle,
+          description: 'Type checking and context-sensitive semantic validation'
+        },
+        {
+          title: 'Intermediate Code Generation',
+          route: 'intermediate-code-generation',
+          icon: FaCode,
+          description: 'Transforming source code to machine-independent representation'
+        },
+        {
+          title: 'Code Optimization',
+          route: 'code-optimization',
+          icon: FaTachometerAlt,
+          description: 'Improving code efficiency and reducing computational overhead'
+        },
+        {
+          title: 'Code Generation',
+          route: 'code-generation',
+          icon: FaMicrochip,
+          description: 'Translating intermediate code to target machine instructions'
+        },
+        {
+          title: 'Compiler Design Principles',
+          route: 'compiler-design-principles',
+          icon: FaBook,
+          description: 'Fundamental concepts and strategies in compiler construction'
+        }
+      ]
+    },
+    {
+      id: 'computer-organization-architecture',
+      name: 'Computer Organization and Architecture',
+      icon: <FaMicrochip className="text-indigo-500" />,
+      topics: [
+        {
+          title: 'Basic Computer Organization',
+          route: 'basic-computer-organization',
+          icon: FaDesktop,
+          description: 'Fundamental structure and components of computer systems'
+        },
+        {
+          title: 'CPU Organization and Design',
+          route: 'cpu-organization-design',
+          icon: FaMicrochip,
+          description: 'Internal architecture and design of Central Processing Units'
+        },
+        {
+          title: 'Memory Hierarchy',
+          route: 'memory-hierarchy',
+          icon: FaMemory,
+          description: 'Multi-level memory organization and optimization strategies'
+        },
+        {
+          title: 'Instruction-Level Parallelism',
+          route: 'instruction-level-parallelism',
+          icon: FaCodeBranch,
+          description: 'Advanced techniques for simultaneous instruction execution'
+        },
+        {
+          title: 'Input/Output Organization',
+          route: 'input-output-organization',
+          icon: FaExchangeAlt,
+          description: 'Mechanisms for data transfer between computer systems and devices'
+        },
+        {
+          title: 'Computer Arithmetic',
+          route: 'computer-arithmetic',
+          icon: FaCalculator,
+          description: 'Techniques for mathematical operations in digital systems'
+        },
+        {
+          title: 'Advanced Computer Architecture',
+          route: 'advanced-computer-architecture',
+          icon: FaServer,
+          description: 'Cutting-edge design principles and parallel processing techniques'
+        }
+      ]
+    },
+    {
+      id: 'networks',
+      name: 'Computer Networks',
+      icon: <FaNetworkWired className="text-indigo-500" />,
+      topics: [
+        {
+          title: 'Network Fundamentals',
+          route: 'network-fundamentals',
+          icon: FaNetworkWired,
+          description: 'Basic principles of computer networks, topologies, and communication models'
+        },
+        {
+          title: 'OSI Model',
+          route: 'osi-model',
+          icon: FaLayerGroup,
+          description: 'Seven-layer network communication framework and layer interactions'
+        },
+        {
+          title: 'TCP/IP Protocol Suite',
+          route: 'tcp-ip-protocol-suite',
+          icon: FaServer,
+          description: 'Internet communication protocols and their implementation'
+        },
+        {
+          title: 'Routing',
+          route: 'routing',
+          icon: FaRoad,
+          description: 'Network path selection, routing algorithms, and protocols'
+        },
+        {
+          title: 'Network Security',
+          route: 'network-security',
+          icon: FaShieldAlt,
+          description: 'Cryptography, security mechanisms, and protection strategies'
+        },
+        {
+          title: 'Transport Layer',
+          route: 'transport-layer',
+          icon: FaExchangeAlt,
+          description: 'End-to-end communication, connection management, and protocols'
+        },
+        {
+          title: 'Network Performance',
+          route: 'network-performance',
+          icon: FaTachometerAlt,
+          description: 'Performance metrics, optimization techniques, and analysis'
+        }
+      ]
+    },
+    {
+      id: 'digital-logic-design',
+      name: 'Digital Logic & Design',
+      icon: <FaMicrochip className="text-indigo-500" />,
+      topics: [
+        {
+          title: 'Boolean Algebra',
+          route: 'boolean-algebra',
+          icon: FaCalculator,
+          description: 'Fundamental mathematical framework for digital logic operations'
+        },
+        {
+          title: 'Logic Gates',
+          route: 'logic-gates',
+          icon: FaCodeBranch,
+          description: 'Basic building blocks of digital circuit design'
+        },
+        {
+          title: 'Combinational Circuits',
+          route: 'combinational-circuits',
+          icon: FaProjectDiagram,
+          description: 'Circuits with direct input-output relationships'
+        },
+        {
+          title: 'Sequential Circuits',
+          route: 'sequential-circuits',
+          icon: FaMemory,
+          description: 'Circuits with memory and state preservation capabilities'
+        },
+        {
+          title: 'Minimization Techniques',
+          route: 'minimization-techniques',
+          icon: FaCompress,
+          description: 'Methods for reducing logical circuit complexity'
+        },
+        {
+          title: 'Synchronous and Asynchronous Circuits',
+          route: 'synchronous-asynchronous-circuits',
+          icon: FaClock,
+          description: 'Different approaches to digital circuit synchronization'
+        },
+        {
+          title: 'Digital Design Principles',
+          route: 'digital-design-principles',
+          icon: FaMicrochip,
+          description: 'Fundamental strategies for efficient digital system design'
+        }
+      ]
+    },
+    {
+      id: 'data-structures-c-programming',
+      name: 'Data Structures & C Programming',
+      icon: <FaCode className="text-green-500" />,
+      topics: [
+        {
+          title: 'Arrays and Strings',
+          route: 'arrays-and-strings',
+          icon: FaTable,
+          description: 'Fundamental data structures for sequential data storage'
+        },
+        {
+          title: 'Pointers and Memory Management',
+          route: 'pointers-and-memory-management',
+          icon: FaMemory,
+          description: 'Advanced memory manipulation and dynamic allocation techniques'
+        },
+        {
+          title: 'Linked Lists',
+          route: 'linked-lists',
+          icon: FaLink,
+          description: 'Dynamic data structures with flexible memory allocation'
+        },
+        {
+          title: 'Stacks and Queues',
+          route: 'stacks-and-queues',
+          icon: FaLayerGroup,
+          description: 'Linear data structures with distinct access patterns'
+        },
+        {
+          title: 'Trees and Binary Trees',
+          route: 'trees-and-binary-trees',
+          icon: FaTree,
+          description: 'Hierarchical data structures for complex relationships'
+        },
+        {
+          title: 'Graphs',
+          route: 'graphs',
+          icon: FaProjectDiagram,
+          description: 'Network-based data structures for complex connectivity'
+        },
+        {
+          title: 'Advanced Data Structures',
+          route: 'advanced-data-structures',
+          icon: FaCube,
+          description: 'Sophisticated techniques for efficient problem-solving'
+        }
+      ]
     }
   ];
 
-  const filteredMaterials = materials.filter(material => 
-    (searchQuery === '' || 
-      material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      material.subject.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (selectedSubject === null || material.subject === selectedSubject) &&
-    (selectedType === null || material.type === selectedType)
-  );
-
-  const subjects = [...new Set(materials.map(m => m.subject))];
-  const types = [...new Set(materials.map(m => m.type))];
-
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Study Materials Library</h1>
-          <p className="text-xl text-gray-600">Curated resources to support your academic journey</p>
-        </motion.div>
-
-        {/* Filters */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
-        >
-          {/* Search */}
-          <div className="relative w-full sm:w-1/2">
-            <input 
-              type="text" 
-              placeholder="Search materials..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 pl-10 bg-white text-black placeholder-gray-500 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
-
-          {/* Subject Filter */}
-          <div className="flex space-x-2">
-            <select 
-              value={selectedSubject || ''} 
-              onChange={(e) => setSelectedSubject(e.target.value || null)}
-              className="p-2 border border-gray-300 rounded-xl bg-white text-black"
-            >
-              <option value="">All Subjects</option>
-              {subjects.map(subject => (
-                <option key={subject} value={subject}>{subject}</option>
-              ))}
-            </select>
-
-            {/* Type Filter */}
-            <select 
-              value={selectedType || ''} 
-              onChange={(e) => setSelectedType(e.target.value || null)}
-              className="p-2 border border-gray-300 rounded-xl bg-white text-black"
-            >
-              <option value="">All Types</option>
-              {types.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
-        </motion.div>
-
-        {/* Materials Grid */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ staggerChildren: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {filteredMaterials.map((material) => (
-            <motion.div 
-              key={material.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl"
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="text-3xl">
-                    {SUBJECT_ICONS[material.subject]}
-                  </div>
-                  <span className="text-sm text-gray-500">{material.type}</span>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+          <FaBook className="mr-4 text-blue-500" />
+          Study Materials
+        </h1>
+        
+        <div className="grid grid-cols-1 gap-6">
+          {subjects.map((subject) => (
+            <div key={subject.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <button
+                onClick={() => toggleSubject(subject.id)}
+                className="w-full px-6 py-4 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 hover:to-gray-50 transition-all duration-200"
+              >
+                <div className="flex items-center">
+                  {subject.icon}
+                  <h2 className="text-xl font-semibold text-gray-800 ml-4">{subject.name}</h2>
                 </div>
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{material.title}</h2>
-                <p className="text-gray-600 mb-4 text-sm">{material.description}</p>
-                
-                {material.topics && (
-                  <div className="mb-4 bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-lg font-bold text-gray-800 mb-3">Available Topics:</h3>
-                    <div className="space-y-3">
-                      {material.topics.map(topic => (
-                        <div key={topic.name} className="border-b border-gray-200 pb-3 last:border-b-0">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h4 className="font-semibold text-gray-700">{topic.name}</h4>
-                              <p className="text-xs text-gray-500 mt-1">{topic.description}</p>
-                            </div>
-                            <button 
-                              onClick={() => navigate(topic.downloadLink, { state: { topicName: topic.name } })} 
-                              className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs hover:bg-blue-200 transition-colors"
-                            >
-                              View
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                {expandedSubjects[subject.id] ? (
+                  <FaChevronDown className="text-gray-500" />
+                ) : (
+                  <FaChevronRight className="text-gray-500" />
                 )}
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{material.subject}</span>
-                  {!material.topics && (
-                    <button 
-                      onClick={() => navigate(material.downloadLink)} 
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-                    >
-                      <FaDownload className="mr-2" /> Download
-                    </button>
-                  )}
+              </button>
+              
+              {expandedSubjects[subject.id] && (
+                <div className="p-6 bg-white">
+                  <div className="space-y-4">
+                    {subject.topics.map((topic, topicIndex) => (
+                      <Link
+                        key={topicIndex}
+                        to={`/topic/${subject.id}/${topic.route}`}
+                        className="block p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-800">{topic.name || topic.title}</h3>
+                            <p className="text-gray-600 mt-1">{topic.description}</p>
+                          </div>
+                          <FaChevronRight className="text-gray-400" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              )}
+            </div>
           ))}
-        </motion.div>
-
-        {filteredMaterials.length === 0 && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-gray-500 mt-12"
-          >
-            <p className="text-2xl mb-4">No materials found 📚</p>
-            <p>Try adjusting your search or filters</p>
-          </motion.div>
-        )}
+        </div>
       </div>
     </div>
   );

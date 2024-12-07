@@ -23,6 +23,12 @@ import TestResults from './components/TestResults';
 import CsFundamentalsTest from './components/CsFundamentalsTest';
 import AptitudeTest from './components/AptitudeTest';
 import TopicContentViewer from './components/TopicContentViewer';
+import TopicDocumentation from './components/TopicDocumentation';
+
+// Import new course pages
+import JavaScriptCoursePage from './pages/JavaScriptCoursePage';
+import JavaCoursePage from './pages/JavaCoursePage';
+import ReactCoursePage from './pages/ReactCoursePage';
 
 // Import data
 import csFundamentalsQuestions from './data/csFundamentalsQuestions';
@@ -316,7 +322,7 @@ function App() {
               />
               
               <Route 
-                path="/topic/:topicId" 
+                path="/topic-content/:topicCategory/:topicName" 
                 element={
                   <>
                     <SignedIn>
@@ -330,11 +336,11 @@ function App() {
               />
               
               <Route 
-                path="/topic-content/:topicId" 
+                path="/topic/:topicCategory/:topicName" 
                 element={
                   <>
                     <SignedIn>
-                      <TopicContentViewer />
+                      <TopicDocumentation />
                     </SignedIn>
                     <SignedOut>
                       <RedirectToSignIn />
@@ -342,6 +348,10 @@ function App() {
                   </>
                 } 
               />
+              
+              <Route path="/course/javascript" element={<JavaScriptCoursePage />} />
+              <Route path="/course/java" element={<JavaCoursePage />} />
+              <Route path="/course/react" element={<ReactCoursePage />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
