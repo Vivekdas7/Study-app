@@ -27,14 +27,19 @@ const NavItem = ({ icon, name, path, isActive }) => {
       <Link 
         to={path}
         className={`
-          flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300
+          flex items-center space-x-2 
+          px-4 py-2 
+          rounded-xl 
+          transition-all 
+          duration-300
           ${isActive 
             ? 'bg-blue-100 text-blue-700 shadow-md' 
             : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'}
+          text-sm font-medium
         `}
       >
         <span className="text-lg">{icon}</span>
-        <span className="text-sm font-medium hidden md:inline truncate">{name}</span>
+        <span className="hidden md:inline truncate">{name}</span>
       </Link>
       {isActive && (
         <motion.div 
@@ -95,107 +100,126 @@ const CommonHeader = () => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="sticky top-0 z-50 bg-white shadow-md w-full"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm w-full max-w-full overflow-x-hidden"
     >
-      <div className="max-w-full px-4 py-3 flex justify-between items-center overflow-x-hidden">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center w-full max-w-full">
         {/* Logo and Brand */}
-        <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="flex items-center space-x-2 sm:space-x-4"
-        >
-          <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center space-x-4">
+          <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/images/logo.svg" 
               alt="Question Paper App Logo" 
-              className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl transform transition-transform hover:rotate-6"
+              className="w-10 h-10 rounded-full object-contain"
             />
-            <div className="hidden sm:block">
-              <h1 className="text-lg sm:text-xl font-bold text-gray-800">Question Paper App</h1>
-              <p className="text-xs text-gray-500 hidden md:block">Your Academic Companion</p>
-            </div>
+            <span className="text-xl font-bold text-blue-800 hidden sm:block">
+              Question Paper App
+            </span>
           </Link>
-        </motion.div>
+        </div>
 
-        {/* Navigation */}
-        <nav className="hidden lg:flex space-x-1 items-center overflow-x-auto">
-          {navItems.map((item) => (
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex space-x-2 items-center">
+          {navItems.map((item, index) => (
             <NavItem 
-              key={item.path}
-              {...item}
+              key={index}
+              icon={item.icon}
+              name={item.name}
+              path={item.path}
               isActive={location.pathname === item.path}
             />
           ))}
         </nav>
 
-        {/* Right Side Actions */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          {/* Notifications */}
-          <motion.div 
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            className="relative"
-          >
-            <button className="text-gray-600 hover:text-blue-600 relative">
-              <FaBell className="text-lg sm:text-xl" />
+        {/* User and Notifications Area */}
+        <div className="flex items-center space-x-4">
+          {/* Notification Bell */}
+          <div className="relative hidden md:block">
+            <button className="text-gray-600 hover:text-blue-600 transition-colors">
+              <FaBell className="text-xl" />
               {notifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {notifications.length}
                 </span>
               )}
             </button>
-          </motion.div>
+          </div>
 
-          {/* User Profile */}
-          <UserButton 
-            appearance={{
-              elements: {
-                userButtonAvatarBox: 'w-8 h-8 sm:w-10 sm:h-10 border-2 border-blue-100 hover:border-blue-300 transition-all rounded-full'
-              }
-            }}
-            afterSignOutUrl="/login" 
-          />
+          {/* User Authentication */}
+          {user ? (
+            <UserButton 
+              appearance={{
+                elements: {
+                  userButtonAvatarBox: 'w-9 h-9 border-2 border-blue-100 hover:border-blue-300 transition-all rounded-full'
+                }
+              }}
+              afterSignOutUrl="/" 
+            />
+          ) : (
+            <Link 
+              to="/sign-in"
+              className="
+                bg-blue-600 
+                text-white 
+                px-4 
+                py-2 
+                rounded-full 
+                text-sm 
+                font-medium 
+                hover:bg-blue-700 
+                transition-colors
+                shadow-md
+                hover:shadow-lg
+                hidden md:block
+              "
+            >
+              Sign In
+            </Link>
+          )}
 
-          {/* Mobile Menu Toggle */}
-          <motion.button 
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden text-gray-600 hover:text-blue-600"
-          >
-            {isMobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
-          </motion.button>
+          {/* Mobile Menu Toggle - Positioned to the right */}
+          <div className="md:hidden flex items-center">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-600 hover:text-blue-600 transition-colors ml-auto"
+            >
+              {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white shadow-md w-full"
+            className="md:hidden bg-white/95 backdrop-blur-md shadow-md w-full max-w-full"
           >
-            <div className="px-4 py-6 space-y-2">
-              {navItems.map((item) => (
+            <nav className="px-4 py-4 space-y-2 w-full">
+              {navItems.map((item, index) => (
                 <Link
-                  key={item.path}
+                  key={index}
                   to={item.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
                   className={`
-                    flex items-center space-x-3 px-4 py-3 rounded-lg transition-all
+                    flex items-center space-x-3 
+                    px-4 py-3 
+                    rounded-xl 
+                    transition-all 
+                    duration-300
                     ${location.pathname === item.path 
-                      ? 'bg-blue-100 text-blue-800' 
+                      ? 'bg-blue-100 text-blue-700' 
                       : 'text-gray-600 hover:bg-gray-100'}
+                    text-sm font-medium
+                    w-full
                   `}
                 >
                   <span className="text-lg">{item.icon}</span>
                   <span>{item.name}</span>
                 </Link>
               ))}
-            </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>

@@ -10,15 +10,16 @@ import {
   FaMapMarkerAlt
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import LogoIcon from '../assets/images/react-logo.svg'; // Using React logo as default
 
 const SocialIcon = ({ Icon, href, color }) => (
   <motion.a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    whileHover={{ scale: 1.2, rotate: 360 }}
+    whileHover={{ scale: 1.2, rotate: 5 }}
     whileTap={{ scale: 0.9 }}
-    className={`text-2xl ${color} transition-all duration-300 hover:opacity-80`}
+    className={`${color} text-2xl hover:opacity-80 transition-all`}
   >
     <Icon />
   </motion.a>
@@ -54,66 +55,85 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-blue-900 to-indigo-900 text-white py-12 px-4 md:px-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="bg-gradient-to-br from-blue-900 to-indigo-900 text-white py-16 px-0 w-screen min-w-full overflow-hidden relative left-0 right-0">
+      <div className="container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-full">
         {/* App Description */}
-        <div className="space-y-4">
-          <motion.h2 
+        <div className="space-y-6 text-center md:text-left">
+          <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-3xl font-bold text-white flex items-center"
+            className="flex flex-col md:flex-row items-center justify-center md:justify-start space-y-4 md:space-y-0 md:space-x-4"
           >
-            Question Paper App
-            <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">Beta</span>
-          </motion.h2>
-          <p className="text-gray-300 leading-relaxed">
+            <img 
+              src={LogoIcon} 
+              alt="Question Paper App Logo" 
+              className="w-10 h-10 rounded-full object-contain"
+            />
+            <div className="flex flex-col items-center md:items-start">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white">
+                Question Paper App
+              </h2>
+              <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded mt-2 md:ml-2">
+                Beta
+              </span>
+            </div>
+          </motion.div>
+          
+          <p className="text-sm sm:text-base text-gray-300 leading-relaxed px-4 md:px-0">
             Empowering engineering students with comprehensive study resources, 
             question papers, and learning tools to excel in their academic journey.
           </p>
           
           {/* Social Links */}
-          <div className="flex space-x-4 mt-4">
-            <SocialIcon 
-              Icon={FaGithub} 
-              href="https://github.com/yourusername" 
-              color="text-white" 
-            />
-            <SocialIcon 
-              Icon={FaLinkedin} 
-              href="https://linkedin.com/company/questionpaperapp" 
-              color="text-blue-400" 
-            />
-            <SocialIcon 
-              Icon={FaTwitter} 
-              href="https://twitter.com/questionpaperapp" 
-              color="text-blue-500" 
-            />
-            <SocialIcon 
-              Icon={FaInstagram} 
-              href="https://instagram.com/questionpaperapp" 
-              color="text-pink-500" 
-            />
+          <div className="flex justify-center md:justify-start space-x-4 mt-6">
+            {[
+              { Icon: FaGithub, href: "https://github.com/yourusername", color: "text-white" },
+              { Icon: FaLinkedin, href: "https://linkedin.com/company/questionpaperapp", color: "text-blue-400" },
+              { Icon: FaTwitter, href: "https://twitter.com/questionpaperapp", color: "text-blue-500" },
+              { Icon: FaInstagram, href: "https://instagram.com/questionpaperapp", color: "text-pink-500" }
+            ].map(({ Icon, href, color }, index) => (
+              <motion.a
+                key={index}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                className={`${color} text-2xl hover:opacity-80 transition-all`}
+              >
+                <Icon />
+              </motion.a>
+            ))}
           </div>
         </div>
 
         {/* Quick Links */}
-        <div>
+        <div className="space-y-6 text-center md:text-left">
           <h3 className="text-xl font-semibold mb-4 border-b border-blue-700 pb-2">
             Quick Links
           </h3>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3 px-4 md:px-0">
             {quickLinks.map((link) => (
               <motion.div
-                key={link.name}
+                key={link.path}
                 whileHover={{ translateX: 5 }}
                 className="group"
               >
                 <Link 
                   to={link.path} 
-                  className="text-gray-300 hover:text-white transition-colors flex items-center"
+                  className="
+                    text-gray-300 
+                    hover:text-white 
+                    transition-colors 
+                    flex 
+                    items-center 
+                    justify-center md:justify-start
+                    text-sm 
+                    sm:text-base
+                  "
                 >
-                  <span className="mr-2 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="mr-2 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline">
                     →
                   </span>
                   {link.name}
@@ -124,19 +144,28 @@ const Footer = () => {
         </div>
 
         {/* Contact Information */}
-        <div>
+        <div className="space-y-6 text-center md:text-left">
           <h3 className="text-xl font-semibold mb-4 border-b border-blue-700 pb-2">
             Contact Us
           </h3>
-          <div className="space-y-3">
-            {contactInfo.map(({ icon: Icon, text, href }) => (
+          <div className="space-y-3 px-4 md:px-0">
+            {contactInfo.map(({ icon: Icon, text, href }, index) => (
               <motion.a
-                key={text}
+                key={index}
                 href={href}
                 whileHover={{ scale: 1.05 }}
-                className="flex items-center text-gray-300 hover:text-white transition-colors"
+                className="
+                  flex 
+                  items-center 
+                  justify-center md:justify-start
+                  text-gray-300 
+                  hover:text-white 
+                  transition-colors 
+                  text-sm 
+                  sm:text-base
+                "
               >
-                <Icon className="mr-3 text-blue-400" />
+                <Icon className="mr-3 text-blue-400 text-lg" />
                 {text}
               </motion.a>
             ))}
@@ -145,31 +174,38 @@ const Footer = () => {
       </div>
 
       {/* Copyright and Newsletter */}
-      <div className="mt-12 pt-6 border-t border-blue-800 text-center">
-        <div className="max-w-xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-gray-400">
+      <div className="mt-12 pt-6 border-t border-blue-800 text-center w-screen min-w-full">
+        <div className="container mx-auto px-4 md:px-8 max-w-4xl flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-xs sm:text-sm text-gray-400">
             {currentYear} Question Paper App. All Rights Reserved. Version 1.0.0
           </p>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex items-center bg-white/10 rounded-full px-4 py-2"
-          >
-            <input 
-              type="email" 
-              placeholder="Subscribe to our newsletter" 
-              className="bg-transparent text-white placeholder-gray-400 focus:outline-none"
-            />
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="bg-blue-500 text-white px-4 py-2 rounded-full ml-2"
+          <div className="flex space-x-4">
+            <Link 
+              to="/privacy" 
+              className="
+                text-xs 
+                sm:text-sm 
+                text-gray-300 
+                hover:text-white 
+                transition-colors
+              "
             >
-              Subscribe
-            </motion.button>
-          </motion.div>
+              Privacy Policy
+            </Link>
+            <Link 
+              to="/terms" 
+              className="
+                text-xs 
+                sm:text-sm 
+                text-gray-300 
+                hover:text-white 
+                transition-colors
+              "
+            >
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
