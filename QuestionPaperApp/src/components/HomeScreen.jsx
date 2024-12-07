@@ -127,29 +127,35 @@ const CourseCard = ({
   courseRoute
 }) => {
   return (
-    <div className={`
-      relative 
-      bg-white 
-      rounded-3xl 
-      shadow-xl 
-      overflow-hidden 
-      transition-all 
-      duration-300 
-      hover:shadow-2xl 
-      group
-      border 
-      border-gray-100 
-      hover:border-blue-200
-      transform 
-      hover:-translate-y-2
-      max-w-md 
-      mx-auto
-    `}>
+    <motion.div 
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      className={`
+        relative 
+        bg-white 
+        rounded-3xl 
+        shadow-xl 
+        overflow-hidden 
+        transition-all 
+        duration-300 
+        hover:shadow-2xl 
+        group
+        border 
+        border-gray-100 
+        hover:border-blue-200
+        transform 
+        hover:-translate-y-2
+        flex 
+        flex-col
+      `}
+    >
       {/* Course Header */}
       <div className={`
-        p-6 
+        p-5 
         pb-4 
         flex 
+        flex-col 
+        sm:flex-row 
         items-center 
         justify-between 
         ${bgColor} 
@@ -157,23 +163,25 @@ const CourseCard = ({
         border-b 
         border-gray-100
       `}>
-        <div className="flex items-center space-x-5">
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-5 w-full">
           <img 
             src={logo} 
             alt={`${title} Logo`} 
-            className="w-20 h-20 rounded-xl object-contain shadow-md"
+            className="w-16 sm:w-20 h-16 sm:h-20 rounded-xl object-contain shadow-md"
           />
-          <div>
+          <div className="text-center sm:text-left w-full">
             <h3 className={`
-              text-3xl 
+              text-2xl 
+              sm:text-3xl 
               font-bold 
               ${textColor} 
               tracking-tight
               mb-2
+              text-center sm:text-left
             `}>
               {title}
             </h3>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start space-y-2 sm:space-y-0 sm:space-x-3">
               <span className="
                 text-sm 
                 font-medium 
@@ -197,7 +205,7 @@ const CourseCard = ({
       </div>
 
       {/* Course Content */}
-      <div className="p-6 pt-4">
+      <div className="p-5 pt-4 flex flex-col flex-grow">
         {/* Description */}
         <p className="
           text-gray-700 
@@ -206,6 +214,7 @@ const CourseCard = ({
           leading-relaxed 
           min-h-[4.5rem] 
           line-clamp-3
+          text-center sm:text-left
         ">
           {description}
         </p>
@@ -217,10 +226,11 @@ const CourseCard = ({
             font-semibold 
             text-gray-800 
             mb-3
+            text-center sm:text-left
           ">
             Key Skills:
           </h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
             {skills.map((skill, index) => (
               <span 
                 key={index} 
@@ -310,12 +320,13 @@ const CourseCard = ({
             shadow-md
             group-hover:shadow-lg
             active:scale-95
+            mt-auto
           `}
         >
           Start Learning
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -541,70 +552,71 @@ const HomeScreen = () => {
         </motion.div>
 
         {/* Free Courses Section */}
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              Free Coding Courses
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Unlock your potential with our comprehensive, industry-aligned coding courses. 
-              Learn from beginner to advanced level, completely free.
-            </p>
-          </div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            {courses.map((course, index) => (
-              <CourseCard 
-                key={index}
-                title={course.title}
-                description={course.description}
-                logo={course.logo}
-                bgColor={course.bgColor}
-                textColor={course.textColor}
-                level={course.level}
-                duration={course.duration}
-                rating={course.rating}
-                skills={course.skills}
-                courseRoute={course.courseRoute}
-              />
-            ))}
-          </motion.div>
-
-          <div className="text-center mt-16">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-xl mx-auto">
-                Our courses are designed to provide practical, real-world skills 
-                that employers are looking for in today's competitive tech landscape.
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="py-12 bg-gray-50"
+        >
+          <div className="container mx-auto px-4 max-w-7xl">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                Free Coding Courses
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Kickstart your coding journey with our comprehensive, free online courses designed for aspiring developers.
               </p>
-              <Link 
-                to="/courses" 
-                className="
-                  inline-block 
-                  px-8 py-3 
-                  bg-blue-600 
-                  text-white 
-                  font-semibold 
-                  rounded-full 
-                  hover:bg-blue-700 
-                  transition-colors 
-                  shadow-md 
-                  hover:shadow-lg
-                  text-base sm:text-lg
-                "
-              >
-                Explore All Courses
-              </Link>
-            </motion.div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {courses.map((course, index) => (
+                <CourseCard 
+                  key={index}
+                  title={course.title}
+                  description={course.description}
+                  logo={course.logo}
+                  bgColor={course.bgColor}
+                  textColor={course.textColor}
+                  level={course.level}
+                  duration={course.duration}
+                  rating={course.rating}
+                  skills={course.skills}
+                  courseRoute={course.courseRoute}
+                />
+              ))}
+            </div>
           </div>
+        </motion.section>
+
+        <div className="text-center mt-16">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-xl mx-auto">
+              Our courses are designed to provide practical, real-world skills 
+              that employers are looking for in today's competitive tech landscape.
+            </p>
+            <Link 
+              to="/courses" 
+              className="
+                inline-block 
+                px-8 py-3 
+                bg-blue-600 
+                text-white 
+                font-semibold 
+                rounded-full 
+                hover:bg-blue-700 
+                transition-colors 
+                shadow-md 
+                hover:shadow-lg
+                text-base sm:text-lg
+              "
+            >
+              Explore All Courses
+            </Link>
+          </motion.div>
         </div>
       </div>
     </div>
