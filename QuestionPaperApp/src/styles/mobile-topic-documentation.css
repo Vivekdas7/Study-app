@@ -4,9 +4,13 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
+  width: 100%; /* Ensure full width */
+  max-width: 100%; /* Prevent overflow */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .mobile-section {
+  width: 100%; /* Ensure full width */
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   overflow: hidden;
@@ -14,6 +18,7 @@
 }
 
 .mobile-section-header {
+  width: 100%; /* Ensure full width */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -105,5 +110,8 @@
 @media (max-width: 768px) {
   .mobile-section-header {
     font-size: 14px;
+  }
+  .mobile-view .mobile-topic-container {
+    padding: 8px; /* Slightly reduced padding for smaller screens */
   }
 }

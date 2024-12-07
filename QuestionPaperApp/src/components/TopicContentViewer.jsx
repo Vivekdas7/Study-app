@@ -15,6 +15,9 @@ import { engineeringMathematicsData } from '../data/engineeringMathematics';
 import { discreteMathematicsData } from '../data/discreteMathematics';
 import { linearAlgebraData } from '../data/topics/linearAlgebra';
 
+// Import new CSS for full-width styling
+import '../styles/topic-content-viewer.css';
+
 const topicContents = {
   // Discrete Mathematics Topics
   'discrete-math': discreteMathematicsData,
@@ -420,34 +423,45 @@ const TopicContentViewer = () => {
 
   // Main rendering logic remains the same as in previous implementation
   return (
-    <div className="container mx-auto px-4 py-8">
-      {selectedTopic && (
-        <div>
-          {/* Existing title and description rendering */}
-          
-          {selectedTopic.comprehensiveOverview && (
-            <div className="mb-8 bg-gray-50 p-6 rounded-lg">
-              <h2 className="text-2xl font-semibold text-blue-800 mb-4 border-b-2 border-blue-300 pb-2">
-                Comprehensive Overview
-              </h2>
-              <pre className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-                {selectedTopic.comprehensiveOverview}
-              </pre>
-            </div>
-          )}
+    <div className="topic-content-container relative">
+      {/* Floating Back Button */}
+      <button 
+        onClick={() => navigate(-1)} 
+        className="floating-back-button"
+        aria-label="Go Back"
+      >
+        <FaArrowLeft className="text-lg" />
+      </button>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h2 className="text-2xl font-semibold text-blue-800 mb-4">Topic Sections</h2>
-              {renderTopicSections(selectedTopic.sections)}
-            </div>
+      <div className="topic-content-wrapper">
+        {selectedTopic && (
+          <div>
+            {/* Existing title and description rendering */}
             
-            <div>
-              {renderPreviousYearQuestions(selectedTopic.previousYearQuestions)}
+            {selectedTopic.comprehensiveOverview && (
+              <div className="mb-8 bg-gray-50 p-6 rounded-lg">
+                <h2 className="text-2xl font-semibold text-blue-800 mb-4 border-b-2 border-blue-300 pb-2">
+                  Comprehensive Overview
+                </h2>
+                <pre className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                  {selectedTopic.comprehensiveOverview}
+                </pre>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-blue-800 mb-4">Topic Sections</h2>
+                {renderTopicSections(selectedTopic.sections)}
+              </div>
+              
+              <div>
+                {renderPreviousYearQuestions(selectedTopic.previousYearQuestions)}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

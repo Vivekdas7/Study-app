@@ -1,0 +1,59 @@
+/* Topic Content Viewer Full Width Styles */
+.topic-content-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.topic-content-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .topic-content-container {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .topic-content-wrapper {
+    width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* Floating Back Button Styles */
+.floating-back-button {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(59, 130, 246, 0.9); /* Tailwind blue-500 with opacity */
+  color: white;
+  border-radius: 9999px; /* Full rounded */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.floating-back-button:hover {
+  background-color: rgba(59, 130, 246, 1); /* Full opacity on hover */
+  transform: scale(1.05);
+}
+
+@media (max-width: 640px) {
+  .floating-back-button {
+    top: 12px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+  }
+}
