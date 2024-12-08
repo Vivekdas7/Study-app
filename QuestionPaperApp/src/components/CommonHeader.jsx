@@ -134,7 +134,7 @@ const CommonHeader = () => {
                 className="w-10 h-10 rounded-full object-contain"
               />
               <span className="text-xl font-bold text-blue-800 tracking-tight antialiased hidden sm:block">
-                Question Paper App
+              codium
               </span>
             </Link>
           </div>

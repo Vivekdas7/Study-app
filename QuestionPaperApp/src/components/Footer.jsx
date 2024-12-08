@@ -84,7 +84,7 @@ const Footer = () => {
               className="w-12 h-12 rounded-full object-contain"
             />
             <h2 className="text-xl font-bold text-blue-800">
-              Question Paper App
+            codium
             </h2>
           </div>
           <p className="text-sm text-gray-600 mb-4">
