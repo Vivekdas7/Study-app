@@ -1246,34 +1246,28 @@ const CodingPractice = () => {
             {topic} ({filteredQuestions.length} questions)
           </h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-full table-fixed">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Question</th>
-                <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Difficulty</th>
-                <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difficulty</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredQuestions.map((question) => (
-                <motion.tr 
-                  key={question.id} 
-                  className="hover:bg-gray-50 transition-colors"
-                  whileHover={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}
-                >
-                  <td className="px-8 py-5 whitespace-nowrap">
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                      <input
-                        type="checkbox"
-                        checked={completedQuestions.includes(question.id)}
-                        onChange={() => onToggleComplete(question.id)}
-                        className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-md cursor-pointer transition-all duration-200"
-                      />
-                    </motion.div>
+                <tr key={question.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-2 py-4 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={completedQuestions.includes(question.id)}
+                      onChange={() => onToggleComplete(question.id)}
+                      className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-md cursor-pointer transition-all duration-200"
+                    />
                   </td>
-                  <td className="px-8 py-5">
+                  <td className="px-2 py-4">
                     <a
                       href={question.leetcodeLink}
                       target="_blank"
@@ -1283,9 +1277,9 @@ const CodingPractice = () => {
                       {question.question}
                     </a>
                   </td>
-                  <td className="px-8 py-5">
+                  <td className="px-2 py-4">
                     <span
-                      className={`px-3 py-1 inline-flex text-sm font-semibold rounded-full ${
+                      className={`px-2 py-1 inline-flex text-sm font-semibold rounded-full ${
                         question.difficulty === 'Easy'
                           ? 'bg-green-100 text-green-800'
                           : question.difficulty === 'Medium'
@@ -1296,17 +1290,17 @@ const CodingPractice = () => {
                       {question.difficulty}
                     </span>
                   </td>
-                  <td className="px-8 py-5">
+                  <td className="px-2 py-4">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => window.open(question.leetcodeLink, '_blank')}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors duration-200"
+                      className="px-2 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors duration-200"
                     >
                       Solve
                     </motion.button>
                   </td>
-                </motion.tr>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -1322,7 +1316,7 @@ const CodingPractice = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 py-8 max-w-7xl mt-16"
+      className="container-fluid px-4 py-8"
     >
       {/* Header Section */}
       <div className="mb-12">

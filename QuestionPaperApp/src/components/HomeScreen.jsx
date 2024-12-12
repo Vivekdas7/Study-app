@@ -498,7 +498,7 @@ const HomeScreen = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 mt-16">
+    <div className="min-h-screen bg-gray-50">
       {notification && (
         <Notification 
           message={notification.message} 
@@ -506,7 +506,7 @@ const HomeScreen = () => {
         />
       )}
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-10 lg:mb-12">
           <div>
