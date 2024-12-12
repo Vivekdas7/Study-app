@@ -26,12 +26,15 @@ import {
   FaBookOpen,
   FaClock,
   FaStar,
-  FaUnlock 
+  FaUnlock,
+  FaHourglassHalf,
+  FaArrowRight
 } from 'react-icons/fa';
+import { SiLeetcode, SiCodechef, SiHackerrank } from 'react-icons/si';
 
 // Import logos
 import JavascriptLogo from '../assets/images/javascript-logo.svg';
-import JavaLogo from '../assets/images/java-logo.svg';
+import JavaLogo from '../assets/images/java-logo.png';
 import ReactLogo from '../assets/images/react-logo.svg';
 
 // Animated Notification Component
@@ -330,6 +333,51 @@ const CourseCard = ({
   );
 };
 
+const contests = [
+  {
+    id: 1,
+    title: "Daily Coding Challenge",
+    platform: "LeetCode",
+    type: "Daily",
+    startTime: "00:00 UTC",
+    duration: "24 hours",
+    difficulty: "Easy to Medium",
+    link: "https://leetcode.com/contest/",
+    icon: <SiLeetcode className="text-yellow-500" />,
+    bgColor: "from-yellow-50 to-yellow-100",
+    borderColor: "border-yellow-200",
+    buttonColor: "bg-yellow-600 hover:bg-yellow-700"
+  },
+  {
+    id: 2,
+    title: "Weekly Contest",
+    platform: "CodeChef",
+    type: "Weekly",
+    startTime: "Sunday, 15:00 UTC",
+    duration: "3 hours",
+    difficulty: "Medium to Hard",
+    link: "https://www.codechef.com/contests",
+    icon: <SiCodechef className="text-green-500" />,
+    bgColor: "from-green-50 to-green-100",
+    borderColor: "border-green-200",
+    buttonColor: "bg-green-600 hover:bg-green-700"
+  },
+  {
+    id: 3,
+    title: "Monthly Programming Contest",
+    platform: "HackerRank",
+    type: "Monthly",
+    startTime: "First Saturday, 14:00 UTC",
+    duration: "4 hours",
+    difficulty: "All Levels",
+    link: "https://www.hackerrank.com/contests",
+    icon: <SiHackerrank className="text-blue-500" />,
+    bgColor: "from-blue-50 to-blue-100",
+    borderColor: "border-blue-200",
+    buttonColor: "bg-blue-600 hover:bg-blue-700"
+  }
+];
+
 const HomeScreen = () => {
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
@@ -450,7 +498,7 @@ const HomeScreen = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 lg:px-16 xl:px-24">
+    <div className="min-h-screen bg-gray-50 mt-16">
       {notification && (
         <Notification 
           message={notification.message} 
@@ -586,9 +634,7 @@ const HomeScreen = () => {
               ))}
             </div>
           </div>
-        </motion.section>
-
-        <div className="text-center mt-16">
+          <div className="text-center mt-16">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -618,6 +664,99 @@ const HomeScreen = () => {
             </Link>
           </motion.div>
         </div>
+        </motion.section>
+
+        {/* Coding Contests Section */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="py-12"
+        >
+          <div className="container mx-auto px-4 max-w-7xl">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                Coding Contests
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Participate in coding contests to improve your problem-solving skills and compete with developers worldwide.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {contests.map((contest) => (
+                <motion.div
+                  key={contest.id}
+                  whileHover={{ y: -5 }}
+                  className={`bg-gradient-to-br ${contest.bgColor} rounded-2xl shadow-md border ${contest.borderColor} overflow-hidden`}
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">
+                          {contest.icon}
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800">
+                          {contest.title}
+                        </h3>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold 
+                        ${contest.type === 'Daily' ? 'bg-yellow-200 text-yellow-800' :
+                          contest.type === 'Weekly' ? 'bg-green-200 text-green-800' :
+                          'bg-blue-200 text-blue-800'}`}
+                      >
+                        {contest.type}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 mb-6">
+                      <div className="flex items-center text-gray-700">
+                        <FaClock className="mr-2" />
+                        <span>{contest.startTime}</span>
+                      </div>
+                      <div className="flex items-center text-gray-700">
+                        <FaHourglassHalf className="mr-2" />
+                        <span>Duration: {contest.duration}</span>
+                      </div>
+                      <div className="flex items-center text-gray-700">
+                        <FaChartLine className="mr-2" />
+                        <span>Difficulty: {contest.difficulty}</span>
+                      </div>
+                      <div className="flex items-center text-gray-700">
+                        <FaCode className="mr-2" />
+                        <span>Platform: {contest.platform}</span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={contest.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`block w-full text-center py-3 rounded-xl font-semibold text-white transition-all duration-200 ${contest.buttonColor}`}
+                    >
+                      Register Now
+                    </a>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <p className="text-gray-600 mb-4">
+                New to competitive programming? Check out our guide to get started!
+              </p>
+              <Link
+                to="/coding-practice"
+                className="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-semibold"
+              >
+                <span>Learn More</span>
+                <FaArrowRight className="ml-2" />
+              </Link>
+            </div>
+          </div>
+        </motion.section>
+
+        
       </div>
     </div>
   );
