@@ -505,7 +505,6 @@ const HomeScreen = () => {
           type={notification.type} 
         />
       )}
-
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-10 lg:mb-12">
@@ -606,6 +605,9 @@ const HomeScreen = () => {
           transition={{ delay: 0.6 }}
           className="py-12 bg-gray-50"
         >
+          <div className="marquee">
+            <p>Test Marquee</p>
+          </div>
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
